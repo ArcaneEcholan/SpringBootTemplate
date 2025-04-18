@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -68,9 +69,14 @@ public class BeforeBeanInitializer
     static Environment environment;
 
     public static TableNameMapper getTableNameMapper() {
-      return environment.getProperty(TableSuffixInitHook.TABLE_NAME_MAPPER, TableNameMapper.class);
+      return environment.getProperty(TableSuffixInitHook.TABLE_NAME_MAPPER,
+          TableNameMapper.class);
     }
 
+    public static boolean dbEnable() {
+      return Objects.equals(environment.getProperty("db.enable"), "true");
+    }
   }
 
 }
+

@@ -2,7 +2,6 @@ package com.chaowen.springboottemplate.base;
 
 import static com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper.getTableNameMapper;
 
-import com.alibaba.druid.pool.DruidDataSource;
 import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
@@ -11,7 +10,6 @@ import com.chaowen.springboottemplate.base.common.OrderedHandlerInterceptor;
 import java.util.Comparator;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.stream.Collectors;
-import javax.sql.DataSource;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.springframework.context.ApplicationContext;
@@ -58,18 +56,7 @@ public class BeansFactory {
     return interceptor;
   }
 
-  // mysql datasource
-  @Bean
-  public DataSource dataSource(DbProperties dbProperties) {
-    DruidDataSource dataSource = new DruidDataSource();
-    dataSource.setConnectionErrorRetryAttempts(5);
-    dataSource.setTimeBetweenConnectErrorMillis(5000);
-    dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-    dataSource.setUrl(dbProperties.getUrl());
-    dataSource.setUsername(dbProperties.getUser());
-    dataSource.setPassword(dbProperties.getPassword());
-    return dataSource;
-  }
+
 
   @Bean
   public MybatisPlusInterceptor mybatisPlusInterceptor() {

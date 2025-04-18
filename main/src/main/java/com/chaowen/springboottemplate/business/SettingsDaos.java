@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
+import com.chaowen.springboottemplate.base.ConditionalOnDbEnabled;
 import java.io.Serializable;
 import java.util.List;
 import lombok.Data;
@@ -15,6 +16,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 public class SettingsDaos {
 
@@ -38,13 +40,15 @@ public class SettingsDaos {
   }
 
   @Repository
-  public static class SettingsDao  {
+  @ConditionalOnDbEnabled
+  public static class SettingsDao {
 
     @Autowired
     private SettingsMapper settingsMapper;
 
+    @Transactional
     public List<SettingsPo> all() {
-        return settingsMapper.selectList(null);
+      return settingsMapper.selectList(null);
     }
 
     @Nullable

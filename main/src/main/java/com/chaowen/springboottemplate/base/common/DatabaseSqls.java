@@ -6,13 +6,10 @@ import java.util.Map;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.var;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 public class DatabaseSqls {
 
@@ -68,19 +65,4 @@ public class DatabaseSqls {
         String columns);
   }
 
-  @Service
-  public static class DatabaseService {
-
-    @Autowired
-    private DatabaseSqlMapper databaseSqlMapper;
-
-    public void createIndex(
-        String indexName, String tableName, List<String> columnNames) {
-      // convert List to comma-separated string
-      var columns = String.join(", ", columnNames);
-
-      // pass the parameters to the MyBatis mapper
-      databaseSqlMapper.createIndex(indexName, tableName, columns);
-    }
-  }
 }

@@ -5,6 +5,7 @@ import static com.chaowen.springboottemplate.base.DbProperties.formUrlWithoutDbN
 
 import com.chaowen.springboottemplate.base.BeforeBeanInitializer.BeforeBeanInitHook;
 import com.chaowen.springboottemplate.base.BeforeBeanInitializer.BeforeBeanInitOrder;
+import com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper;
 import com.chaowen.springboottemplate.base.common.Utils;
 import java.io.IOException;
 import java.net.NetworkInterface;
@@ -36,7 +37,10 @@ public class BeforeBeanInitHooks {
       // declare more hooks here...
 
       hooks.add(tableSuffixInit);
-      hooks.add(databaseCreateHook);
+      if(SpringEnvWrapper.dbEnable()) {
+        hooks.add(databaseCreateHook);
+      }
+
       // add more hooks here...
     }
   }
@@ -45,6 +49,7 @@ public class BeforeBeanInitHooks {
   public static class TableSuffixInitHook implements BeforeBeanInitHook {
 
     public static final String TABLE_NAME_MAPPER = "TABLE_NAME_MAPPER";
+    public static final String DB_ENABLE = "DB_ENABLE";
 
     @Override
     public void run(Environment env, Map<String, Object> customPropsMap) {
