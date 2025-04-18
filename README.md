@@ -43,32 +43,37 @@ English | [简体中文](./README-zh.md)
 
     ```bash
     mkdir -p ~/projects
-    cd ~/projects 
+    cd ~/projects
     git clone git@github.com:ArcaneEcholan/easy-spring-template.git
     cd easy-spring-template
     ```
 
--   start a db:
-    
-    setup database with one tap
-
-    ```sh
-    sudo docker compose -f ./docker-compose-db.yml up -d 
-    ```
-
-    configure it at: `src/main/resources/application.yml`:
-
-    ```
-    # ============== custom ==============
-    db:
-        user: root
-        password: root  
-        name: test
-        host: localhost
-        port: 33061
-    ```
-
 -   run `App.java` and access your endpoints
+
+## Run with DB
+
+By default, this template can run without configuring any db related settings.
+
+If you want to connect to db, simple turn on `db.enabled`.
+
+Setup Database with docker:
+
+```sh
+sudo docker compose -f ./docker-compose-db.yml up -d
+```
+
+Configure db properties at: `src/main/resources/application.yml`:
+
+```
+# ============== custom ==============
+db:
+    enabled: true
+    user: root
+    password: root
+    name: test
+    host: localhost
+    port: 33061
+```
 
 ---
 

@@ -16,7 +16,7 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 @EnableCaching(proxyTargetClass = true)
 @EnableTransactionManagement
 @EnableScheduling
-public class Application {
+public class App {
 
 
   public static final String APP_SCAN_PACKAGE =
@@ -24,7 +24,7 @@ public class Application {
 
   public static void main(String[] args) {
     var r = Utils.trycatch(() -> {
-      var app = new SpringApplication(Application.class);
+      var app = new SpringApplication(App.class);
 
       // InetAddress.getLocalHost().getHostName() took too long
       app.setLogStartupInfo(false);

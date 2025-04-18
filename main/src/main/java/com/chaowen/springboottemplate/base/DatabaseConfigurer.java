@@ -1,6 +1,6 @@
 package com.chaowen.springboottemplate.base;
 
-import static com.chaowen.springboottemplate.Application.APP_SCAN_PACKAGE;
+import static com.chaowen.springboottemplate.App.APP_SCAN_PACKAGE;
 import static com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper.getTableNameMapper;
 
 import com.chaowen.springboottemplate.base.AfterBeanInitializer.AfterBeanInitHook;
