@@ -17,16 +17,9 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
 import org.springframework.stereotype.Component;
-import oshi.SystemInfo;
 
 @Component
 public class Utils {
-
-  private static final SystemInfo oshiSystemInfo = new SystemInfo();
-
-  public static SystemInfo oshiSystemInfo() {
-    return oshiSystemInfo;
-  }
 
   @NotNull
   public static String fmt(String format, Object... args) {
