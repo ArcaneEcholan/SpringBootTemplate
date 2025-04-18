@@ -1,0 +1,22 @@
+#set($prefix = "$prefix")
+#set($suffix = "$suffix")
+
+create table if not exists $tableNameHelper.map("settings")
+(
+  `id`         varchar(255) not null,
+  `key`        varchar(255) not null,
+  `value`      text         null,
+  primary key (`id`),
+  UNIQUE KEY `settings_unique_index` (`key`)
+);
+
+create table if not exists $tableNameHelper.map("user")
+(
+  `id`            varchar(255) not null,
+  `username`      varchar(255) not null,
+  `password`      varchar(255) not null,
+  `enable`        tinyint(1)   null default null,
+  `ctime`         bigint       null default null,
+  primary key (`id`),
+  UNIQUE KEY `user_unique_index_username` (`username`)
+);

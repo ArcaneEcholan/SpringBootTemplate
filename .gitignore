@@ -1,0 +1,64 @@
+build_cache
+
+**/HELP.md
+**/node_modules/
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+**/log/
+**/for-debug/
+**/for-test/
+**/debug/
+
+# for docker build convenience
+repository.zip
+repository/
+!**/nohup.out
+
+./package-lock.json
+
+# log file
+
+# frontend dist files
+static/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+.mvn
+mvnw
+mvnw.cmd
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### front end ###
+dist/
+node_modules/
+
+### log file ###
+*.log

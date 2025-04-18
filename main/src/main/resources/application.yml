@@ -1,0 +1,115 @@
+
+# ============== built-in ==============
+spring:
+  redis:
+    host: localhost
+    port: 6379
+    database: 0
+  main:
+    banner-mode: off
+  servlet:
+    multipart:
+      max-file-size: 500MB
+      max-request-size: 500MB
+  mvc:
+    async:
+      request-timeout: -1 # 解决慢速下载时的AsyncRequestTimeoutException异常
+
+server:
+  port: 8081
+  tomcat:
+    max-swallow-size: 500MB
+
+mybatis-plus:
+  global-config:
+    banner: false
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  config: classpath:logback-spring.xml
+  level:
+    _org.springframework.web.servlet.HandlerMapping.Mappings: off
+    net.sf.ehcache: info
+    sun.rmi: info
+    oshi.software.os.linux: error
+    oshi.util.FileUtil: error
+    io.netty: info
+    io.netty.handler.logging.LoggingHandler: debug
+    com.ccm.web: debug
+    com.zaxxer.hikari: info
+    com.alibaba.druid.pool.PreparedStatementPool: info
+    org.apache: info
+    org.hibernate: info
+    org.mybatis.spring.mapper.ClassPathMapperScanner: info
+    org.springframework.orm.jpa.JpaTransactionManager: info
+    org.springframework: info
+    org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: warn
+    org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext: warn
+    org.springframework.context.support.PostProcessorRegistrationDelegate: warn
+    org.springframework.context.annotation.AutoProxyRegistrar: off
+    org.springframework.data.repository.config.RepositoryConfigurationDelegate: warn
+    org.apache.catalina.core.StandardContext: warn
+    org.apache.catalina.core.StandardService: warn
+    org.apache.catalina.core.StandardEngine: warn
+    org.apache.coyote.http11.Http11NioProtocol: warn
+
+# ============== custom ==============
+upgrade:
+  package:
+    upload:
+      path: /var/upgrade-packages
+
+rsync:
+  path: /var/upgrade-packages
+  user: "upgrade_package"
+  password: "123456"
+
+db:
+  user: root
+  password: wc123456
+  name: totp-admin
+  host: localhost
+  port: 33061
+
+APP_ROOT_DIR: /etc/smd/files/bin
+APP_RUN_DIR: /tmp/.ttn
+DOCKER_ROOT_DIR: /etc/smd/files/docker
+
+pki:
+  path: /
+
+backup:
+  path: /files
+
+jwt:
+  token-expiration: 2
+  # second|minute|hour|day|week
+  expiration-unit: hour
+  token-sign-key: 111111
+  always-refresh: false
+
+ukey:
+  random: random
+  auth: true
+
+ws:
+  timeout: 3000000
+
+cluster:
+  data-sync: 60000
+
+unixsock:
+  path: /tmp/app.socket
+
+dev:
+  tools:
+    enable: false
+  caller-info:
+    enable: false
+  prod-bypass:
+    enable: false
+
+test:
+  endpoints:
+    enable: false
