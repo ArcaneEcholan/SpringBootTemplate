@@ -1,4 +1,4 @@
-package com.chaowen.springboottemplate.base.auxiliry;
+package com.chaowen.springboottemplate.base;
 
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;

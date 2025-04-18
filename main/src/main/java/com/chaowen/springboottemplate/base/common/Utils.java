@@ -1,22 +1,13 @@
 package com.chaowen.springboottemplate.base.common;
 
-import static com.chaowen.springboottemplate.base.common.Exceptions.newExWithCustomMsg;
-
 import cn.hutool.core.exceptions.ExceptionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.chaowen.springboottemplate.base.auxiliry.Staticed;
-import com.chaowen.springboottemplate.base.common.AppResponses.CommonErrCodes;
 import inet.ipaddr.IPAddress;
 import inet.ipaddr.IPAddressString;
 import inet.ipaddr.IPAddressStringParameters;
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetSocketAddress;
-import java.net.ServerSocket;
 import java.util.Map;
-import java.util.Objects;
 import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.SneakyThrows;
@@ -31,89 +22,11 @@ import oshi.SystemInfo;
 @Component
 public class Utils {
 
-  @Staticed
-  static CommonErrCodes commonErrCodes;
-
   private static final SystemInfo oshiSystemInfo = new SystemInfo();
 
   public static SystemInfo oshiSystemInfo() {
     return oshiSystemInfo;
   }
-
-  // region: port checking
-  public static void udpPortOk(String host, Integer port, RuntimeException ex) {
-    boolean portAvailable = Utils.isUdpPortAvailable(host, port);
-    if (!portAvailable) {
-      throw ex;
-    }
-  }
-
-  public static void udpPortOk(Integer oldPort, Integer newPort) {
-    if (!Objects.equals(newPort, oldPort)) {
-      udpPortOk(newPort,
-          newExWithCustomMsg(Utils.fmt("端口已占用: {}", newPort),
-              commonErrCodes.paramError()));
-    }
-  }
-
-  public static void udpPortOk(String host, Integer oldPort, Integer newPort) {
-    if (!Objects.equals(newPort, oldPort)) {
-      udpPortOk(host, newPort,
-          newExWithCustomMsg(Utils.fmt("端口已占用: {}", newPort),
-              commonErrCodes.paramError()));
-    }
-  }
-
-  public static void udpPortOk(Integer port, RuntimeException ex) {
-    boolean portAvailable = Utils.isUdpPortAvailable(port);
-    if (!portAvailable) {
-      throw ex;
-    }
-  }
-
-  public static void tcpPortOk(Integer port, RuntimeException ex) {
-    boolean portAvailable = Utils.isPortAvailable(port);
-    if (!portAvailable) {
-      throw ex;
-    }
-  }
-
-  public static void tcpPortOk(Integer oldPort, Integer newPort) {
-    if (!Objects.equals(newPort, oldPort)) {
-      tcpPortOk(newPort,
-          newExWithCustomMsg(Utils.fmt("端口已占用: {}", newPort),
-              commonErrCodes.paramError()));
-    }
-  }
-
-  public static boolean isPortAvailable(Integer port) {
-    try (var serverSocket = new ServerSocket(port)) {
-      serverSocket.setReuseAddress(true);
-      return true;
-    } catch (IOException e) {
-      return false;
-    }
-  }
-
-  public static boolean isUdpPortAvailable(Integer port) {
-    try (var datagramSocket = new DatagramSocket(port)) {
-      datagramSocket.setReuseAddress(true);
-      return true;
-    } catch (IOException e) {
-      return false;
-    }
-  }
-
-  public static boolean isUdpPortAvailable(String host, Integer port) {
-    try (var datagramSocket = new DatagramSocket(
-        new InetSocketAddress(host, port))) {
-      datagramSocket.setReuseAddress(true);
-      return true;
-    } catch (IOException e) {
-      return false;
-    }
-  }
-  // endregion
 
   @NotNull
   public static String fmt(String format, Object... args) {

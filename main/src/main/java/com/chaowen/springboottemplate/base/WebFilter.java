@@ -1,16 +1,12 @@
 package com.chaowen.springboottemplate.base;
 
-import com.chaowen.springboottemplate.base.common.JsonUtil;
 import com.chaowen.springboottemplate.mvchooks.MvcHookAround;
-import com.chaowen.springboottemplate.mvchooks.MvcHookException;
-import com.chaowen.springboottemplate.utils.ThreadLocalUtils;
+import com.chaowen.springboottemplate.mvchooks.ThreadLocalUtil;
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -24,10 +20,11 @@ import org.springframework.web.util.ContentCachingRequestWrapper;
 
 @Slf4j
 @Component
-class RawInterceptorFilter extends OncePerRequestFilter {
+class WebFilter extends OncePerRequestFilter {
 
   @Autowired
   MvcHookAround mvcHookAround;
+
   @Override
   protected void doFilterInternal(
       HttpServletRequest request, HttpServletResponse response,
@@ -43,7 +40,7 @@ class RawInterceptorFilter extends OncePerRequestFilter {
             .collect(Collectors.joining(","));
         headers.put(name, value);
       }
-      ThreadLocalUtils.getCtx().setHeaders(headers);
+      ThreadLocalUtil.getCtx().setHeaders(headers);
     }
 
     // wrap request to allow body reuse

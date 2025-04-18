@@ -1,25 +1,19 @@
 package com.chaowen.springboottemplate.mvchooks;
 
-import com.chaowen.springboottemplate.base.common.AppResponses.CommonErrCodes;
-import com.chaowen.springboottemplate.base.common.AppResponses.JsonResult;
+import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
 import com.chaowen.springboottemplate.base.common.SimpleFactories;
-import com.chaowen.springboottemplate.utils.ThreadLocalUtils;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 
 @Slf4j
 @Component
 public class MvcHookAround {
-
-  @Autowired
-  private CommonErrCodes commonErrCodes;
 
   public boolean beforeMvcRequest(
       @NotNull HttpServletRequest request,
@@ -30,7 +24,7 @@ public class MvcHookAround {
       return true;
     }
 
-    var ctx = ThreadLocalUtils.getCtx();
+    var ctx = ThreadLocalUtil.getCtx();
     ctx.setStartTs(System.currentTimeMillis());
 
     var uri = request.getRequestURI();
@@ -50,8 +44,8 @@ public class MvcHookAround {
 
     if (jsonResult.getCode() == null) {
       log.error("code is required in response");
-      return SimpleFactories.ofMap("code", commonErrCodes.serverErr().getCode(),
-          "msg", commonErrCodes.serverErr().getMsg());
+      return SimpleFactories.ofMap("code", RespCodeImpl.SERVER_ERROR.getCode(),
+          "msg", RespCodeImpl.SERVER_ERROR.getMsg());
     }
     r.put("code", jsonResult.getCode());
 
@@ -70,7 +64,7 @@ public class MvcHookAround {
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response) {
     log.debug("== after request ==");
-    ThreadLocalUtils.clear();
+    ThreadLocalUtil.clear();
   }
 
 }
