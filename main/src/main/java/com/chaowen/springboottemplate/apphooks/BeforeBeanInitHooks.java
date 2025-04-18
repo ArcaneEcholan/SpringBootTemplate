@@ -32,16 +32,28 @@ public class BeforeBeanInitHooks {
 
     @Override
     public void getOrderedHooks(List<BeforeBeanInitHook> hooks) {
+      var appStartingLogHook = new AppStartingLogHook();
       var tableSuffixInit = new TableSuffixInitHook();
       var databaseCreateHook = new DatabaseCreateHook();
       // declare more hooks here...
 
+      hooks.add(appStartingLogHook);
       hooks.add(tableSuffixInit);
-      if(SpringEnvWrapper.dbEnable()) {
+      if (SpringEnvWrapper.dbEnable()) {
         hooks.add(databaseCreateHook);
       }
 
       // add more hooks here...
+    }
+  }
+
+  @Slf4j
+  public static class AppStartingLogHook implements BeforeBeanInitHook {
+
+    @Override
+    public void run(
+        Environment env, Map<String, Object> customPropsMap) {
+      log.info("========== app starting... ==========");
     }
   }
 
@@ -95,12 +107,10 @@ class MachineIdGetter {
   public static String getMachineId() {
     String id = tryGetLinuxMachineId();
     if (id != null) {
-      System.out.println("linux machine id: " + id);
       return id;
     }
     id = tryGetMacAddress();
     if (id != null) {
-      System.out.println("max address id: " + id);
       return id;
     }
 

@@ -22,15 +22,7 @@ public class DbProperties {
   private String host = "localhost";
   private String port = "3306";
 
-  @Getter
   private String url;
-
-  @PostConstruct
-  public void init() {
-    url = formUrl(host, port, name);
-    log.debug("data source config: host={} port={} username={} password={}",
-        host, port, user, password);
-  }
 
   public static String formUrl(String host, String port, String name) {
     return Utils.fmt(
@@ -42,5 +34,9 @@ public class DbProperties {
     return Utils.fmt(
         "jdbc:mysql://{}:{}?useUnicode=true&characterEncoding=UTF-8&useSSL=false",
         host, port);
+  }
+
+  public String getUrl() {
+    return formUrl(host, port, name);
   }
 }

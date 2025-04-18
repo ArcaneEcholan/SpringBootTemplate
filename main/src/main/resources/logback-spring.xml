@@ -7,14 +7,12 @@
 <configuration scan="true" scanPeriod="3 seconds">
     <conversionRule conversionWord="clr"
             converterClass="org.springframework.boot.logging.logback.ColorConverter"/>
-    <conversionRule conversionWord="wex"
-            converterClass="org.springframework.boot.logging.logback.WhitespaceThrowableProxyConverter"/>
     <conversionRule conversionWord="wEx"
             converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
 
     <!--    <property name="log.file-location" value="/tmp/logs/ttn-admin-center.log"/>-->
     <property name="CONSOLE_LOG_PATTERN"
-            value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyyMMddHHmmss.SS}}){faint} %clr(%-15.15t){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+            value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyyMMddHHmmss.SS}}){faint} %clr(%-15.15t){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%C::%M]){yellow} %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
     <!-- console out -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">

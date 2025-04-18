@@ -81,7 +81,7 @@ public class DatabaseConfigurer {
       {
         var schemaTemplate = StreamUtils.copyToString(
             this.getClass().getClassLoader()
-                .getResourceAsStream("sql/schema.sql.vm"),
+                .getResourceAsStream("schema.sql.vm"),
             StandardCharsets.UTF_8);
         // preprocess schema before init
         var schema = renderSchema(schemaTemplate, (props) -> {
@@ -94,8 +94,8 @@ public class DatabaseConfigurer {
           for (String sql : schema.split(";")) {
             if (!sql.trim().isEmpty()) {
               jdbcTemplate.execute(sql.trim());
+              log.debug("Create table sql executed: " + sql);
             }
-            log.debug("executed init sql: " + sql);
           }
         } catch (Exception e) {
           throw new RuntimeException(
@@ -148,9 +148,9 @@ public class DatabaseConfigurer {
                 databaseSqlMapper.createIndex(index.getName(),
                     index.getTableName(), columns);
               }
-              log.debug("index created: {}", index);
+              log.debug("Table index created: {}", index);
             } else {
-              log.debug("index exist, skip: {}", index);
+              log.debug("Table index exists: {}", index);
             }
           });
         }

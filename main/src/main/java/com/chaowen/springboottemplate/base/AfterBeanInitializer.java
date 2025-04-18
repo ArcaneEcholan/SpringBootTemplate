@@ -29,7 +29,7 @@ public class AfterBeanInitializer implements SmartInitializingSingleton {
   @SneakyThrows
   @Override
   public void afterSingletonsInstantiated() {
-    log.info("==service init area==");
+    System.out.println("> After Beans Initialized");
 
     var hooks = new ArrayList<AfterBeanInitHook>();
     abstractOrders.forEach(it -> {
@@ -39,6 +39,5 @@ public class AfterBeanInitializer implements SmartInitializingSingleton {
     // ordered services init area
     hooks.forEach(AfterBeanInitHook::run);
   }
-
 
 }

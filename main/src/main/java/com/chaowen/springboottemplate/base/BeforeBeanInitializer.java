@@ -23,7 +23,7 @@ public class BeforeBeanInitializer
   @SneakyThrows
   @Override
   public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
-    log.info("==Before All==");
+    System.out.println("> Before Beans Initialized");
 
     SpringEnvWrapper.environment = event.getEnvironment();
     var customPropsMap = new HashMap<String, Object>();

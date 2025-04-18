@@ -23,8 +23,6 @@ public class Application {
       "com.chaowen.springboottemplate";
 
   public static void main(String[] args) {
-    log.debug("========== app starting... ==========");
-
     var r = Utils.trycatch(() -> {
       var app = new SpringApplication(Application.class);
 

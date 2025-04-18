@@ -49,6 +49,9 @@ logging:
     org.apache.catalina.core.StandardService: warn
     org.apache.catalina.core.StandardEngine: warn
     org.apache.coyote.http11.Http11NioProtocol: warn
+    org.hibernate.validator.internal.util.Version: warn
+    org.jboss.logging: warn
+    org.reflections.Reflections: warn
 
 # ============== custom ==============
 db:
