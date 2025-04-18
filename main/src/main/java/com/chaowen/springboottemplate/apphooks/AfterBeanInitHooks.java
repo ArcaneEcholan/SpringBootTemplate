@@ -5,15 +5,20 @@ import static com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEn
 import cn.hutool.core.io.IoUtil;
 import com.chaowen.springboottemplate.base.AfterBeanInitializer.AfterBeanInitHook;
 import com.chaowen.springboottemplate.base.AfterBeanInitializer.AfterBeanInitOrder;
+import com.chaowen.springboottemplate.base.DbProperties;
+import com.chaowen.springboottemplate.base.common.DatabaseSqls.DatabaseSqlMapper;
 import com.chaowen.springboottemplate.base.common.DatabaseSqls.Index;
 import com.chaowen.springboottemplate.base.common.DbIndexCreator;
 import com.chaowen.springboottemplate.base.common.Functions.Consumer;
+import com.chaowen.springboottemplate.base.common.Utils;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Properties;
+import java.util.stream.Collectors;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
@@ -34,9 +39,12 @@ public class AfterBeanInitHooks {
     @Autowired
     DatabaseTableInitHook databaseTableInit;
 
+    // declare more hooks here ...
+
     @Override
     public void getOrderedHooks(List<AfterBeanInitHook> hooks) {
       hooks.add(databaseTableInit);
+      // add more hooks here ...
     }
   }
 
@@ -45,7 +53,13 @@ public class AfterBeanInitHooks {
   public static class DatabaseTableInitHook implements AfterBeanInitHook {
 
     @Autowired
+    DbProperties dbProperties;
+
+    @Autowired
     DbIndexCreator dbIndexCreator;
+
+    @Autowired
+    DatabaseSqlMapper databaseSqlMapper;
 
     @Autowired
     JdbcTemplate jdbcTemplate;
@@ -77,15 +91,18 @@ public class AfterBeanInitHooks {
 
     @Override
     public void run() {
-      var schemaTemplate = IoUtil.readUtf8(this.getClass().getClassLoader()
-          .getResourceAsStream("sql/schema.sql.vm"));
-      // preprocess schema before init
-      var schema = renderSchema(schemaTemplate, (props) -> {
-        props.put("tableNameHelper", getTableNameMapper());
-      });
+      // create database
+      databaseSqlMapper.createDatabaseIfNotExists(dbProperties.getName());
 
-      // execute schema init script
+      // create tables
       {
+        var schemaTemplate = IoUtil.readUtf8(this.getClass().getClassLoader()
+            .getResourceAsStream("sql/schema.sql.vm"));
+        // preprocess schema before init
+        var schema = renderSchema(schemaTemplate, (props) -> {
+          props.put("tableNameHelper", getTableNameMapper());
+        });
+
         try {
           // you can do some custom validations before run the script here
 
@@ -111,9 +128,47 @@ public class AfterBeanInitHooks {
           idxList.add(index);
         }
         {
-          // ...
+          // add more indexes here...
         }
-        dbIndexCreator.createIdxs(idxList);
+
+        // do create indexes
+        {
+          idxList.forEach(index -> {
+            var r = Utils.trycatch(
+                    () -> databaseSqlMapper.showIndexes(index.getTableName()))
+                .ifFailed(it -> {
+                  log.warn("create index failed, table not exist: {}", index);
+                }).throwIfEx();
+
+            var indexInfos = r.getValue();
+            var keyNames = indexInfos.stream().filter(
+                    it -> it.containsKey("Key_name") &&
+                          Objects.equals(it.get("Key_name"), index.getName()))
+                .collect(Collectors.toList());
+            if (keyNames.isEmpty()) {
+              {
+                var cols = index.getOrderedColumns();
+
+                cols = cols.stream().map(it -> {
+                  if (!it.startsWith("`")) {
+                    return Utils.fmt("{}{}{}", '`', it, '`');
+                  }
+                  return it;
+                }).collect(Collectors.toList());
+
+                // convert List to comma-separated string
+                var columns = String.join(", ", cols);
+
+                // pass the parameters to the MyBatis mapper
+                databaseSqlMapper.createIndex(index.getName(),
+                    index.getTableName(), columns);
+              }
+              log.debug("index created: {}", index);
+            } else {
+              log.debug("index exist, skip: {}", index);
+            }
+          });
+        }
       }
 
     }

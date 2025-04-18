@@ -39,15 +39,36 @@
 
 ## 快速上手
 
--   克隆项目：
+-   克隆项目:
 
     ```bash
+    mkdir -p ~/projects
+    cd ~/projects
     git clone git@github.com:ArcaneEcholan/easy-spring-template.git
+    cd easy-spring-template
     ```
 
--   导入到你喜欢的 IDE (建议使用 IntelliJ IDEA)
+-   启动一个数据库:
 
--   运行 `App.java`，访问端点
+    直接 docker compose 启动
+
+    ```sh
+    sudo docker compose -f ./docker-compose-db.yml up -d
+    ```
+
+    配到配置文件里: `src/main/resources/application.yml`:
+
+    ```
+    # ============== custom ==============
+    db:
+        user: root
+        password: root
+        name: test
+        host: localhost
+        port: 33061
+    ```
+
+-   运行 `App.java` 即可
 
 ---
 

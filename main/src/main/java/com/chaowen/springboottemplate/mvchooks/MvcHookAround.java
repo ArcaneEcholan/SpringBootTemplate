@@ -19,6 +19,7 @@ public class MvcHookAround {
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response, @NotNull Object handler) {
     log.debug("== pre handle request ==");
+
     // Only intercept HandlerMethod
     if (!(handler instanceof HandlerMethod)) {
       return true;

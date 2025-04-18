@@ -1,0 +1,22 @@
+networks:
+  test_network:
+    driver: bridge
+
+services:
+  mysql:
+    image: mysql:5.7
+    container_name: test_db
+    restart: always
+    networks:
+      - test_network
+    ports:
+      - "0.0.0.0:33061:3306"
+    volumes:
+      - /root/docker_volume/db/mysql_data:/var/lib/mysql
+      - /root/docker_volume/db/mysql_conf.d:/etc/mysql/conf.d
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+    command:
+      - --character-set-server=utf8mb4
+      - --collation-server=utf8mb4_general_ci

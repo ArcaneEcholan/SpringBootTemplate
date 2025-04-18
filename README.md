@@ -42,10 +42,31 @@ English | [简体中文](./README-zh.md)
 -   clone the project:
 
     ```bash
+    mkdir -p ~/projects
+    cd ~/projects 
     git clone git@github.com:ArcaneEcholan/easy-spring-template.git
+    cd easy-spring-template
     ```
 
--   import into your IDE (IntelliJ IDEA recommended)
+-   start a db:
+    
+    setup database with one tap
+
+    ```sh
+    sudo docker compose -f ./docker-compose-db.yml up -d 
+    ```
+
+    configure it at: `src/main/resources/application.yml`:
+
+    ```
+    # ============== custom ==============
+    db:
+        user: root
+        password: root  
+        name: test
+        host: localhost
+        port: 33061
+    ```
 
 -   run `App.java` and access your endpoints
 

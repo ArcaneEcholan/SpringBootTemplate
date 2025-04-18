@@ -1,6 +1,7 @@
 package com.chaowen.springboottemplate.base;
 
 import javax.annotation.PostConstruct;
+import com.chaowen.springboottemplate.base.common.Utils;
 import lombok.Data;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
@@ -26,14 +27,20 @@ public class DbProperties {
 
   @PostConstruct
   public void init() {
-    url = formUrl(host, Integer.valueOf(port), name);
+    url = formUrl(host, port, name);
     log.debug("data source config: host={} port={} username={} password={}",
         host, port, user, password);
   }
 
-  public static String formUrl(String host, int port, String name) {
-    return String.format(
-        "jdbc:mysql://%s:%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false",
+  public static String formUrl(String host, String port, String name) {
+    return Utils.fmt(
+        "jdbc:mysql://{}:{}/{}?useUnicode=true&characterEncoding=UTF-8&useSSL=false",
         host, port, name);
+  }
+
+  public static String formUrlWithoutDbName(String host, String port) {
+    return Utils.fmt(
+        "jdbc:mysql://{}:{}?useUnicode=true&characterEncoding=UTF-8&useSSL=false",
+        host, port);
   }
 }

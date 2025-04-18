@@ -50,6 +50,9 @@ public class DatabaseSqls {
   @Mapper
   public interface DatabaseSqlMapper {
 
+    @Update("CREATE DATABASE IF NOT EXISTS `${dbName}` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci")
+    void createDatabaseIfNotExists(String dbName);
+
     @Select("SHOW INDEXES FROM ${tableName}")
     List<Map<String, Object>> showIndexes(
         @Param("tableName")
