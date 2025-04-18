@@ -3,14 +3,15 @@ package com.chaowen.springboottemplate.base;
 import static com.chaowen.springboottemplate.Application.APP_SCAN_PACKAGE;
 import static com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper.getTableNameMapper;
 
-import cn.hutool.core.io.IoUtil;
-import com.alibaba.druid.pool.DruidDataSource;
 import com.chaowen.springboottemplate.base.AfterBeanInitializer.AfterBeanInitHook;
 import com.chaowen.springboottemplate.base.common.DatabaseSqls.DatabaseSqlMapper;
 import com.chaowen.springboottemplate.base.common.DatabaseSqls.Index;
 import com.chaowen.springboottemplate.base.common.Functions.Consumer;
 import com.chaowen.springboottemplate.base.common.Utils;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import java.io.StringWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -29,6 +30,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.util.StreamUtils;
 
 public class DatabaseConfigurer {
 
@@ -70,14 +72,17 @@ public class DatabaseConfigurer {
     }
 
     @Override
+    @SneakyThrows
     public void run() {
       // create database
       databaseSqlMapper.createDatabaseIfNotExists(dbProperties.getName());
 
       // create tables
       {
-        var schemaTemplate = IoUtil.readUtf8(this.getClass().getClassLoader()
-            .getResourceAsStream("sql/schema.sql.vm"));
+        var schemaTemplate = StreamUtils.copyToString(
+            this.getClass().getClassLoader()
+                .getResourceAsStream("sql/schema.sql.vm"),
+            StandardCharsets.UTF_8);
         // preprocess schema before init
         var schema = renderSchema(schemaTemplate, (props) -> {
           props.put("tableNameHelper", getTableNameMapper());
@@ -166,16 +171,24 @@ public class DatabaseConfigurer {
     }
 
     // mysql datasource
+
     @Bean
     public DataSource dataSource(DbProperties dbProperties) {
-      DruidDataSource dataSource = new DruidDataSource();
-      dataSource.setConnectionErrorRetryAttempts(5);
-      dataSource.setTimeBetweenConnectErrorMillis(5000);
-      dataSource.setDriverClassName("com.mysql.cj.jdbc.Driver");
-      dataSource.setUrl(dbProperties.getUrl());
-      dataSource.setUsername(dbProperties.getUser());
-      dataSource.setPassword(dbProperties.getPassword());
-      return dataSource;
+      HikariConfig config = new HikariConfig();
+      config.setJdbcUrl(dbProperties.getUrl());
+      config.setUsername(dbProperties.getUser());
+      config.setPassword(dbProperties.getPassword());
+      config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
+      // hikari equivalent settings
+      config.setMaximumPoolSize(10); // optional: default is 10
+      config.setMinimumIdle(2);      // optional
+      config.setConnectionTimeout(30000); // default is 30s
+      config.setIdleTimeout(600000);     // default is 10min
+      config.setMaxLifetime(1800000);    // default is 30min
+      config.setInitializationFailTimeout(5000); // fail fast on init
+
+      return new HikariDataSource(config);
     }
   }
 }

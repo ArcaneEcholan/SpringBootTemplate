@@ -1,15 +1,15 @@
 package com.chaowen.springboottemplate.mvchooks;
 
-import static com.chaowen.springboottemplate.base.common.JsonUtil.JSON_FORMAT_ERROR_MSG;
-
-import cn.hutool.core.io.IoUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
 import com.chaowen.springboottemplate.base.AppResponses.RespCode;
 import com.chaowen.springboottemplate.base.JsonReqBodyCoercions.JsonDeserializeException;
 import com.chaowen.springboottemplate.base.common.CustomErrorController.WebCtxException;
 import com.chaowen.springboottemplate.base.common.JsonUtil;
+
+import static com.chaowen.springboottemplate.base.common.JsonUtil.JSON_FORMAT_ERROR_MSG;
+
 import com.chaowen.springboottemplate.base.common.SimpleFactories;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -28,6 +28,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -41,6 +43,11 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 @Component
 public class MvcHookException {
+
+  public static final String PARAM_VIOLATION_KEY = "violations";
+
+  @Autowired
+  HelperFunctions helperFunctions;
 
   @SneakyThrows
   public ResponseEntity exceptionHappened(
@@ -81,16 +88,10 @@ public class MvcHookException {
     // controller param checking error
     if (ex instanceof BindException ||
         ex instanceof MethodArgumentNotValidException) {
-      BindingResult bindingResult = null;
-      try {
-        bindingResult =
-            (BindingResult) ReflectUtil.getFieldValue(ex, "bindingResult");
-      } catch (Throwable e) {
-        log.error("fail to get binding result field of Class: {}",
-            ex.getClass().getName());
-        return ResponseEntity.ok(
-            JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
-      }
+
+      var field = ReflectionUtils.findField(ex.getClass(), "bindingResult");
+      ReflectionUtils.makeAccessible(field);
+      var bindingResult = (BindingResult) ReflectionUtils.getField(field, ex);
       Objects.requireNonNull(bindingResult);
 
       List<String> violations = new ArrayList<>();
@@ -166,7 +167,7 @@ public class MvcHookException {
         var pageHtml = "404";
         var in = new ClassPathResource("/static/index.html").getInputStream();
         if (in != null) {
-          pageHtml = IoUtil.readUtf8(in);
+          pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
         }
         return returnHtml(pageHtml);
       }
@@ -187,9 +188,6 @@ public class MvcHookException {
     String key;
     String msg;
   }
-
-  @Autowired
-  HelperFunctions helperFunctions;
 
   @Component
   public static class HelperFunctions {
@@ -255,6 +253,4 @@ public class MvcHookException {
           SimpleFactories.ofJson("code", code, "msg", msg, "data", data));
     }
   }
-
-  public static final String PARAM_VIOLATION_KEY = "violations";
 }

@@ -1,18 +1,13 @@
 package com.chaowen.springboottemplate.base.common;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import inet.ipaddr.IPAddress;
-import inet.ipaddr.IPAddressString;
-import inet.ipaddr.IPAddressStringParameters;
 import java.util.Map;
-import java.util.regex.Pattern;
 import lombok.Getter;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.apache.commons.lang.exception.ExceptionUtils;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.helpers.MessageFormatter;
@@ -28,7 +23,7 @@ public class Utils {
 
   @NotNull
   public static Throwable getRootCause(@NotNull Throwable t) {
-    var rt = ExceptionUtil.getRootCause(t);
+    var rt = ExceptionUtils.getRootCause(t);
     if (rt == null) {
       return t;
     }
@@ -117,7 +112,8 @@ public class Utils {
 
   @SneakyThrows
   @Nullable
-  public static <T, R> R ifNotNull(@Nullable T obj, Functions.Function<T, R> mapping) {
+  public static <T, R> R ifNotNull(
+      @Nullable T obj, Functions.Function<T, R> mapping) {
     if (obj != null) {
       return mapping.apply(obj);
     }
@@ -144,91 +140,44 @@ public class Utils {
     }
   }
 
+  @Deprecated
+  public static String getParentOfCaller() {
+    return "";
+  }
+
+  @Deprecated
+  public static String getSuperParentOfCaller() {
+    return "";
+  }
+
+  @Nullable
+  public static <T> T getOne(BaseMapper<T> mapper, LambdaQueryWrapper<T> q) {
+    var list = mapper.selectList(q);
+    if (list.isEmpty()) {
+      return null;
+    } else {
+      return list.get(0);
+    }
+  }
+
+  public static <T> LambdaQueryWrapper<T> getQw(Class<T> clz) {
+    return Wrappers.lambdaQuery();
+  }
+
+  @Nullable
+  public static <T extends Enum<T>> T enumValueOf(Class<T> clz, String obj) {
+
+    var r = trycatch(() -> Enum.valueOf(clz, obj));
+    if (r.hasEx()) {
+      return null;
+    }
+
+    return r.getValue();
+  }
+
   public interface Provider<T> {
 
     T run() throws Exception;
-  }
-
-  @Slf4j
-  public static class IpUtils {
-
-    // chinese not support
-    private static final String DOMAIN_REGEX =
-        "^(?!-)[A-Za-z0-9-]{1,63}(?<!-)(\\.[A-Za-z]{2,6})+$";
-
-    public static boolean isValidDomain(String domain) {
-      return domain != null && domain.matches(DOMAIN_REGEX);
-    }
-
-    private static IPAddressStringParameters allowInetAtonIpParam() {
-      return new IPAddressStringParameters.Builder().allow_inet_aton(false)
-          .toParams();
-    }
-
-    public static boolean isIpv4Cidr(String cidr) {
-      if (!isIpv4(cidr)) {
-        return false;
-      }
-      return cidr.contains("/");
-    }
-
-
-    public static boolean isIpv6Cidr(String cidr) {
-      if (!isIpv6(cidr)) {
-        return false;
-      }
-      return cidr.contains("/");
-    }
-
-    public static boolean isIp(String ip) {
-      return isIpv4(ip) || isIpv6(ip);
-    }
-
-    public static boolean isCidr(String ip) {
-      return isIpv4Cidr(ip) || isIpv6Cidr(ip);
-    }
-
-    @SneakyThrows
-    public static boolean isIpv4(String ip) {
-      try {
-        var ipAddress =
-            new IPAddressString(ip, allowInetAtonIpParam()).toAddress();
-        return ipAddress.getBitCount() == 32 && checkDash(ip);
-      } catch (Throwable e) {
-        log.warn("ip validation failed: {}", e.getMessage());
-        return false;
-      }
-    }
-
-    @SneakyThrows
-    public static boolean isIpv6(String ip) {
-      try {
-        var ipAddress =
-            new IPAddressString(ip, allowInetAtonIpParam()).toAddress();
-        return ipAddress.getBitCount() == 128 && checkDash(ip);
-      } catch (Throwable e) {
-        log.warn("ip validation failed: {}", e.getMessage());
-        return false;
-      }
-    }
-
-    public static String getSubnet(String whiteListReq) {
-
-      return new IPAddressString(whiteListReq).getAddress().toPrefixBlock()
-          .toString();
-    }
-
-    public static boolean compareSubnet(String ip1, String ip2) {
-
-      IPAddress addr1 = new IPAddressString(ip1).getAddress().toPrefixBlock();
-      IPAddress addr2 = new IPAddressString(ip2).getAddress().toPrefixBlock();
-
-      return addr1.toString().equals(addr2.toString());
-    }
-
-    private static boolean checkDash(@NotNull String ip) {
-      return Pattern.compile("^[0-9/:.a-fA-F]+$").matcher(ip).matches();
-    }
   }
 
   @Getter
@@ -317,40 +266,5 @@ public class Utils {
     public boolean hasValue() {
       return value != null;
     }
-  }
-
-  @Deprecated
-  public static String getParentOfCaller() {
-    return "";
-  }
-
-  @Deprecated
-  public static String getSuperParentOfCaller() {
-    return "";
-  }
-
-  @Nullable
-  public static <T> T getOne(BaseMapper<T> mapper, LambdaQueryWrapper<T> q) {
-    var list = mapper.selectList(q);
-    if (list.isEmpty()) {
-      return null;
-    } else {
-      return list.get(0);
-    }
-  }
-
-  public static <T> LambdaQueryWrapper<T> getQw(Class<T> clz) {
-    return Wrappers.lambdaQuery();
-  }
-
-  @Nullable
-  public static <T extends Enum<T>> T enumValueOf(Class<T> clz, String obj) {
-
-    var r = trycatch(() -> Enum.valueOf(clz, obj));
-    if (r.hasEx()) {
-      return null;
-    }
-
-    return r.getValue();
   }
 }
