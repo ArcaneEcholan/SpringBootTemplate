@@ -23,11 +23,25 @@ English | [简体中文](./README-zh.md)
 
 ## MVC Hooks
 
--   **Before/After Handle Request**: Hook custom logic before entering a controller method.
+Controller Logic Exception:
+`beforeMvcRequest` → `exceptionHappened` → `beforeWritingBody` → `afterMvcRequest`
 
--   **Exception Handlers**: Centralized exception management.
+**Spring** / **Tomcat Ctx** Logic Exception (e.g., Route Not Found):
+`beforeMvcRequest` → **NONE** → **NONE** → `afterMvcRequest` → `Handle Extra Exception`
 
--   **Response Body Customization**: Globally customize response bodies before returning to clients.
+- **beforeMvcRequest / afterMvcRequest**
+  custom logic executed before and after entering the controller method.
+
+- **exceptionHappened**
+  centralized logic for handling exceptions.
+
+- **beforeWritingBody**
+  global customization of the response body, processed right before it’s returned to the client.
+
+- **Handle Extra Exception**
+  handles exceptions outside business logic, such as those from the spring framework (e.g., route not found) that can’t be customized through regular exception handling.
+  this includes exceptions not handled by `exceptionHappened` — most commonly used for custom 404 pages.
+
 
 ## SQL Schema Init
 
@@ -48,32 +62,32 @@ English | [简体中文](./README-zh.md)
     cd easy-spring-template
     ```
 
--   run `App.java` and access your endpoints
+-   run `App.java` without configuring a db by default
+
+---
 
 ## Run with DB
 
-By default, this template can run without configuring any db related settings.
+* Set `db.enabled: true`.
 
-If you want to connect to db, simple turn on `db.enabled`.
+* Start Database with docker:
 
-Setup Database with docker:
+    ```sh
+    sudo docker compose -f ./docker-compose-db.yml up -d
+    ```
 
-```sh
-sudo docker compose -f ./docker-compose-db.yml up -d
-```
+* Configure db properties at: `src/main/resources/application.yml`:
 
-Configure db properties at: `src/main/resources/application.yml`:
-
-```
-# ============== custom ==============
-db:
-    enabled: true
-    user: root
-    password: root
-    name: test
-    host: localhost
-    port: 33061
-```
+    ```
+    # ============== custom ==============
+    db:
+        enabled: true
+        user: root
+        password: root
+        name: test
+        host: localhost
+        port: 33061
+    ```
 
 ---
 

@@ -18,20 +18,10 @@ public class MvcHookAround {
   public boolean beforeMvcRequest(
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response, @NotNull Object handler) {
-    log.debug("== pre handle request ==");
-
-    // Only intercept HandlerMethod
-    if (!(handler instanceof HandlerMethod)) {
-      return true;
-    }
-
     var ctx = ThreadLocalUtil.getCtx();
     ctx.setStartTs(System.currentTimeMillis());
 
-    var uri = request.getRequestURI();
     var method = ((HandlerMethod) handler).getMethod();
-
-    log.debug("== pre handle success ==");
 
     return true;
   }
@@ -40,7 +30,8 @@ public class MvcHookAround {
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response, JsonResult jsonResult) {
 
-    log.debug("== before writting body ==");
+    log.debug("> Before Writing Response Body");
+
     var r = SimpleFactories.ofMap();
 
     if (jsonResult.getCode() == null) {
@@ -64,7 +55,7 @@ public class MvcHookAround {
   public void afterMvcRequest(
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response) {
-    log.debug("== after request ==");
+    log.debug("> After Request");
     ThreadLocalUtil.clear();
   }
 

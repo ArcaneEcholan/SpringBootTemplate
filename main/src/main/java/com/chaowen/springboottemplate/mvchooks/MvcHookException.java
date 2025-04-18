@@ -3,13 +3,11 @@ package com.chaowen.springboottemplate.mvchooks;
 import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
 import com.chaowen.springboottemplate.base.AppResponses.RespCode;
 import com.chaowen.springboottemplate.base.JsonReqBodyCoercions.JsonDeserializeException;
-import com.chaowen.springboottemplate.base.common.CustomErrorController.WebCtxException;
 import com.chaowen.springboottemplate.base.common.JsonUtil;
 
 import static com.chaowen.springboottemplate.base.common.JsonUtil.JSON_FORMAT_ERROR_MSG;
 
 import com.chaowen.springboottemplate.base.common.SimpleFactories;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -22,14 +20,10 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.stereotype.Component;
 import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StreamUtils;
 import org.springframework.validation.BindException;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
@@ -52,7 +46,7 @@ public class MvcHookException {
   @SneakyThrows
   public ResponseEntity exceptionHappened(
       HttpServletRequest req, HttpServletResponse resp, Exception ex) {
-    log.debug("== handle exception ==");
+    log.debug("> Handle Exception");
 
     var url = "";
     var method = "";
@@ -150,37 +144,9 @@ public class MvcHookException {
               type));
     }
 
-    // if any other exception not listed above occurs and tomcat catches
-    // it, you can handle it here, for example, when spring throws a handler_mapping_not_found,
-    // or there are other errors thrown out from inner tomcat,
-    // you have the right to decide what to return.
-    if (ex instanceof WebCtxException) {
-      int statusCode = resp.getStatus();
-
-      if (statusCode == HttpStatus.NOT_FOUND.value()) {
-        // deal with api not found
-        if (req.getRequestURI().startsWith("/api")) {
-          return ResponseEntity.notFound().build();
-        }
-
-        // deal with static not found (especially useful for SPA)
-        var pageHtml = "404";
-        var in = new ClassPathResource("/static/index.html").getInputStream();
-        if (in != null) {
-          pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-        }
-        return returnHtml(pageHtml);
-      }
-    }
-
     return helperFunctions.getServerErrorResult();
   }
 
-  private ResponseEntity returnHtml(@NotNull String html) {
-    var headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-    return new ResponseEntity(html, headers, HttpStatus.OK);
-  }
 
   @Data
   static class Violation {
