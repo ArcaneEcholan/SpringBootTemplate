@@ -8,7 +8,6 @@ import com.chaowen.springboottemplate.base.AfterBeanInitializer.AfterBeanInitOrd
 import com.chaowen.springboottemplate.base.common.DatabaseSqls.Index;
 import com.chaowen.springboottemplate.base.common.DbIndexCreator;
 import com.chaowen.springboottemplate.base.common.Functions.Consumer;
-import com.chaowen.springboottemplate.base.common.SqlRenderer;
 import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,9 +43,6 @@ public class AfterBeanInitHooks {
   @Slf4j
   @Component
   public static class DatabaseTableInitHook implements AfterBeanInitHook {
-
-    @Autowired
-    SqlRenderer sqlRenderer;
 
     @Autowired
     DbIndexCreator dbIndexCreator;

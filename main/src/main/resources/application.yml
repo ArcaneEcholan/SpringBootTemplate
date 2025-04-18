@@ -1,10 +1,5 @@
-
 # ============== built-in ==============
 spring:
-  redis:
-    host: localhost
-    port: 6379
-    database: 0
   main:
     banner-mode: off
   servlet:
@@ -13,10 +8,11 @@ spring:
       max-request-size: 500MB
   mvc:
     async:
-      request-timeout: -1 # 解决慢速下载时的AsyncRequestTimeoutException异常
+      # resolution for AsyncRequestTimeoutException when download too slow
+      request-timeout: -1
 
 server:
-  port: 8081
+  port: 8080
   tomcat:
     max-swallow-size: 500MB
 
@@ -55,61 +51,9 @@ logging:
     org.apache.coyote.http11.Http11NioProtocol: warn
 
 # ============== custom ==============
-upgrade:
-  package:
-    upload:
-      path: /var/upgrade-packages
-
-rsync:
-  path: /var/upgrade-packages
-  user: "upgrade_package"
-  password: "123456"
-
 db:
   user: root
-  password: wc123456
-  name: totp-admin
+  password: root
+  name: test
   host: localhost
-  port: 33061
-
-APP_ROOT_DIR: /etc/smd/files/bin
-APP_RUN_DIR: /tmp/.ttn
-DOCKER_ROOT_DIR: /etc/smd/files/docker
-
-pki:
-  path: /
-
-backup:
-  path: /files
-
-jwt:
-  token-expiration: 2
-  # second|minute|hour|day|week
-  expiration-unit: hour
-  token-sign-key: 111111
-  always-refresh: false
-
-ukey:
-  random: random
-  auth: true
-
-ws:
-  timeout: 3000000
-
-cluster:
-  data-sync: 60000
-
-unixsock:
-  path: /tmp/app.socket
-
-dev:
-  tools:
-    enable: false
-  caller-info:
-    enable: false
-  prod-bypass:
-    enable: false
-
-test:
-  endpoints:
-    enable: false
+  port: 3306

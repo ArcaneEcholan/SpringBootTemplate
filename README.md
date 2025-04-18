@@ -1,66 +1,65 @@
-# Project Overview
+# Easy SpringBoot Template
 
 English | [简体中文](./README-zh.md)
 
 ## Introduction
 
-> A template based on **Spring Boot 2.7.0**, providing a set of features to simplify app startup.
+> A lightweight and easy-to-use Spring Boot startup template, based on **Spring Boot 2.7.0**.
 
 ---
 
-## Features
+## Who Should Use It
 
-### App Start Hooks
+-   developers who find Spring Boot too complex
+-   developers who want a fast application startup
 
-- **Before All Beans Init**
-    - Execute custom logic **before** any Spring beans are initialized. Typical customization could be that there are some high-priority task that need to be done even before database beans has been initialized.
+---
 
-- **After All Beans Inited**
-    - Execute custom logic **after** all Spring beans have been initialized. It's very useful for functions relying on databases.
+### App Hooks
+
+-   **Before All Beans Init**: Run custom logic **before** any Spring bean is initialized.
+    useful for high-priority tasks that must happen before even database beans are ready.
+
+-   **After All Beans Inited**: Run custom logic **after** all Spring beans are initialized.
+    helpful for features that depend on database access.
+
+---
+
+### MVC Hooks
+
+-   **Before/After Handle Request**: Hook custom logic before entering a controller method.
+
+-   **Exception Handlers**: Centralized exception management.
+
+-   **Response Body Customization**: Globally customize response bodies before returning to clients.
+
+---
 
 ### SQL Schema Init
 
-- **Dynamic Table Name**
-    - Support dynamic construction of table names based on runtime context.
+-   **Dynamic Table Name**: Dynamically build table names based on runtime context.
 
-- **Conditionally Create Table Index**
-    - Allow conditional creation of database indexes.
-
-### MVC
-
-- **Request Context**
-    - Provide a lightweight request context holder to simplify access to HTTP request/response/session.
-
-- **Hooks**
-
-    - **Before Handle Request**
-        - Hook custom logic before entering controller handler.
-
-    - **Exception Handlers**
-        - Centralized exception handling for uniform API error responses.
-
-    - **Response Body Customization**
-        - Customize or wrap controller responses globally.
-
-    - **Static Resource Error Customization**
-        - Customize error responses when accessing static resources.
+-   **Conditional Index Creation**: Conditionally create database indexes when needed.
 
 ---
 
 ## Quick Start
 
-1. clone the project
-   ```bash
-   git clone https://github.com/your/repo.git
-   ```
+-   clone the project:
 
-2. import into your favorite IDE (IntelliJ IDEA recommended)
+    ```bash
+    git clone git@github.com:ArcaneEcholan/easy-spring-template.git
+    ```
 
-3. run `Application.java` and access your endpoints
+-   import into your IDE (IntelliJ IDEA recommended)
+
+-   run `App.java` and access your endpoints
 
 ---
 
 ## License
 
 This project is licensed under the MIT License.
+
+---
 

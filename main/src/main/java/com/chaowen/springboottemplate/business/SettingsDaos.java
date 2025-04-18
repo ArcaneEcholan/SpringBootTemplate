@@ -1,4 +1,4 @@
-package com.chaowen.springboottemplate.settingstorage;
+package com.chaowen.springboottemplate.business;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

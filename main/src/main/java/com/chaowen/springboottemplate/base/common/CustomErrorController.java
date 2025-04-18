@@ -1,8 +1,8 @@
 package com.chaowen.springboottemplate.base.common;
 
-import com.chaowen.springboottemplate.base.common.AppResponses.CommonErrCodes;
-import com.chaowen.springboottemplate.base.common.AppResponses.JsonResult;
+import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
 import com.chaowen.springboottemplate.mvchooks.MvcHookException;
+import com.chaowen.springboottemplate.mvchooks.RespCodeImpl;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -16,13 +16,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-
 @Slf4j
 @Controller
 public class CustomErrorController implements ErrorController {
-
-  @Autowired
-  CommonErrCodes commonErrCodes;
 
   @Autowired
   MvcHookException mvcHookException;
@@ -43,7 +39,7 @@ public class CustomErrorController implements ErrorController {
       return mvcHookException.exceptionHappened(httpServletRequest, response,
           new WebCtxException());
     }
-    return ResponseEntity.ok(JsonResult.of(null, commonErrCodes.serverErr()));
+    return ResponseEntity.ok(JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
   }
 
 }

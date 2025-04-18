@@ -4,12 +4,11 @@ import static com.chaowen.springboottemplate.base.common.JsonUtil.JSON_FORMAT_ER
 
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.ReflectUtil;
-import com.chaowen.springboottemplate.base.auxiliry.JsonReqBodyCoercions.JsonDeserializeException;
-import com.chaowen.springboottemplate.base.common.AppResponses.CommonErrCodes;
-import com.chaowen.springboottemplate.base.common.AppResponses.JsonResult;
+import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
+import com.chaowen.springboottemplate.base.AppResponses.RespCode;
+import com.chaowen.springboottemplate.base.JsonReqBodyCoercions.JsonDeserializeException;
 import com.chaowen.springboottemplate.base.common.CustomErrorController.WebCtxException;
-import com.chaowen.springboottemplate.base.common.Exceptions;
-import com.chaowen.springboottemplate.base.common.Exceptions.BackendException;
+import com.chaowen.springboottemplate.base.common.JsonUtil;
 import com.chaowen.springboottemplate.base.common.SimpleFactories;
 import java.util.ArrayList;
 import java.util.List;
@@ -42,9 +41,6 @@ import org.springframework.web.multipart.support.MissingServletRequestPartExcept
 @Slf4j
 @Component
 public class MvcHookException {
-
-  @Autowired
-  private CommonErrCodes commonErrCodes;
 
   @SneakyThrows
   public ResponseEntity exceptionHappened(
@@ -93,7 +89,7 @@ public class MvcHookException {
         log.error("fail to get binding result field of Class: {}",
             ex.getClass().getName());
         return ResponseEntity.ok(
-            JsonResult.of(null, commonErrCodes.serverErr()));
+            JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
       }
       Objects.requireNonNull(bindingResult);
 
@@ -198,26 +194,23 @@ public class MvcHookException {
   @Component
   public static class HelperFunctions {
 
-    @Autowired
-    private CommonErrCodes commonErrCodes;
-
     ResponseEntity<JsonResult> getParamValidationResult(
         @NotNull String msg) {
-      return createJsonResult(commonErrCodes.paramError().getCode(),
-          commonErrCodes.paramError().getMsg(),
-          SimpleFactories.ofJson(Exceptions.PARAM_VIOLATION_KEY, msg));
+      return createJsonResult(RespCodeImpl.PARAMS_ERROR.getCode(),
+          RespCodeImpl.PARAMS_ERROR.getMsg(),
+          SimpleFactories.ofJson(PARAM_VIOLATION_KEY, msg));
     }
 
     ResponseEntity<JsonResult> getParamValidationResult(
         @NotNull List<String> msgs) {
-      return createJsonResult(commonErrCodes.paramError().getCode(),
-          commonErrCodes.paramError().getMsg(),
-          SimpleFactories.ofJson(Exceptions.PARAM_VIOLATION_KEY, msgs));
+      return createJsonResult(RespCodeImpl.PARAMS_ERROR.getCode(),
+          RespCodeImpl.PARAMS_ERROR.getMsg(),
+          SimpleFactories.ofJson(PARAM_VIOLATION_KEY, msgs));
     }
 
     ResponseEntity<JsonResult> getServerErrorResult() {
-      return createJsonResult(commonErrCodes.serverErr().getCode(),
-          commonErrCodes.serverErr().getMsg(), null);
+      return createJsonResult(RespCodeImpl.SERVER_ERROR.getCode(),
+          RespCodeImpl.SERVER_ERROR.getMsg(), null);
     }
 
     ResponseEntity<JsonResult> getResult(
@@ -233,4 +226,35 @@ public class MvcHookException {
     }
   }
 
+  @Data
+  public static class BackendException extends RuntimeException {
+
+    private Object data;
+
+    private String code;
+
+    private String msg;
+
+    public BackendException(Object data, RespCode centerRespCode) {
+      super(centerRespCode.getCode());
+      this.data = data;
+      this.code = centerRespCode.getCode();
+      this.msg = centerRespCode.getMsg();
+    }
+
+    public BackendException(Object data, String code, String msg) {
+      super(code);
+      this.data = data;
+      this.code = code;
+      this.msg = msg;
+    }
+
+    @Override
+    public String toString() {
+      return JsonUtil.toJsonString(
+          SimpleFactories.ofJson("code", code, "msg", msg, "data", data));
+    }
+  }
+
+  public static final String PARAM_VIOLATION_KEY = "violations";
 }

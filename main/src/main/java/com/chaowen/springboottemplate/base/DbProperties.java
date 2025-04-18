@@ -1,4 +1,4 @@
-package com.chaowen.springboottemplate.base.auxiliry;
+package com.chaowen.springboottemplate.base;
 
 import javax.annotation.PostConstruct;
 import lombok.Data;
@@ -7,10 +7,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-@ConfigurationProperties(prefix = "db")
 @Data
 @Slf4j
+@Configuration
+@ConfigurationProperties(prefix = "db")
 public class DbProperties {
 
   @Getter
@@ -32,7 +32,7 @@ public class DbProperties {
   }
 
   public static String formUrl(String host, int port, String name) {
-    return  String.format(
+    return String.format(
         "jdbc:mysql://%s:%s/%s?useUnicode=true&characterEncoding=UTF-8&useSSL=false",
         host, port, name);
   }

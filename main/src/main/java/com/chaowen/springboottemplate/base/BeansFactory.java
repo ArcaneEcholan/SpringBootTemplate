@@ -3,9 +3,10 @@ package com.chaowen.springboottemplate.base;
 import static com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper.getTableNameMapper;
 
 import com.alibaba.druid.pool.DruidDataSource;
+import com.baomidou.mybatisplus.annotation.DbType;
 import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
-import com.chaowen.springboottemplate.base.auxiliry.DbProperties;
+import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerInterceptor;
 import com.chaowen.springboottemplate.base.common.OrderedHandlerInterceptor;
 import java.util.Comparator;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -72,6 +73,14 @@ public class BeansFactory {
     dataSource.setUsername(dbProperties.getUser());
     dataSource.setPassword(dbProperties.getPassword());
     return dataSource;
+  }
+
+  @Bean
+  public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    var interceptor = new MybatisPlusInterceptor();
+    interceptor.addInnerInterceptor(
+        new PaginationInnerInterceptor(DbType.MYSQL));
+    return interceptor;
   }
 
   @Bean
