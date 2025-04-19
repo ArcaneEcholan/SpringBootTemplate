@@ -24,24 +24,20 @@ English | [简体中文](./README-zh.md)
 ## MVC Hooks
 
 Controller Logic Exception:
-`beforeMvcRequest` → `exceptionHappened` → `beforeWritingBody` → `afterMvcRequest`
-
-**Spring** / **Tomcat Ctx** Logic Exception (e.g., Route Not Found):
-`beforeMvcRequest` → **NONE** → **NONE** → `afterMvcRequest` → `Handle Extra Exception`
+`beforeMvcRequest` → `exceptionHappened/Handle Extra Exception` → `beforeWritingBody` → `afterMvcRequest`
 
 - **beforeMvcRequest / afterMvcRequest**
   custom logic executed before and after entering the controller method.
 
 - **exceptionHappened**
-  centralized logic for handling exceptions.
-
-- **beforeWritingBody**
-  global customization of the response body, processed right before it’s returned to the client.
+  centralized logic for handling controller exceptions.
 
 - **Handle Extra Exception**
   handles exceptions outside business logic, such as those from the spring framework (e.g., route not found) that can’t be customized through regular exception handling.
   this includes exceptions not handled by `exceptionHappened` — most commonly used for custom 404 pages.
 
+- **beforeWritingBody**
+  global customization of the response body, processed right before it’s returned to the client.
 
 ## SQL Schema Init
 

@@ -21,18 +21,15 @@
 ## MVC 钩子
 
 Controller 逻辑异常：
-beforeMvcRequest -> exceptionHappened -> beforeWritingBody -> afterMvcRequest
-
-Spring 框架逻辑异常（比如没找到路由）：
-beforeMvcRequest -> **NONE** -> **NONE** -> afterMvcRequest -> Handle Extra Exception
+beforeMvcRequest -> exceptionHappened/Handle Extra Exception -> beforeWritingBody -> afterMvcRequest
 
 - `beforeMvcRequest/afterMvcRequest`: 在进入 Controller 方法前后，执行自定义逻辑。
 
 - `exceptionHappened`: 集中管理异常处理逻辑。
 
-- `beforeWritingBody`: 全局性地自定义响应体，在返回给客户端前进行处理。
-
 - `Handle Extra Exception`: 处理一些业务代码之外的异常，比如 Spring 框架找不到路由这种无法定制的异常，或者没有被 exceptionHappened 处理的异常，都会进入这个特殊异常处理逻辑。（最常见是404页面的定制）。
+
+- `beforeWritingBody`: 全局性地自定义响应体，在返回给客户端前进行处理。
 
 ## SQL 表结构初始化
 

@@ -20,11 +20,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
 @Slf4j
 @Controller
-public class CustomErrorController implements ErrorController {
+public class ExtraErrorController implements ErrorController {
 
   @Autowired
   MvcHookException mvcHookException;
@@ -33,17 +32,17 @@ public class CustomErrorController implements ErrorController {
   MvcHookAround mvcHookAround;
 
   @RequestMapping("/error")
-  @ResponseBody
   @SneakyThrows
-  public ResponseEntity handleApiError(
+  public ResponseEntity handleExtraError(
       HttpServletRequest request, HttpServletResponse response) {
-
     log.debug("> Handle Extra Exception");
+
+    HttpServletRequest req = request;
+    HttpServletResponse resp = response;
 
     if (request instanceof HttpServletRequestWrapper) {
       var httpServletRequestWrapper = (HttpServletRequestWrapper) request;
-      HttpServletRequest httpServletRequest =
-          (HttpServletRequest) httpServletRequestWrapper.getRequest();
+      req = (HttpServletRequest) httpServletRequestWrapper.getRequest();
 
       // Any other exception caused by Controller but not handled by
       // MvcHookException::exceptionHappened(),
@@ -58,27 +57,27 @@ public class CustomErrorController implements ErrorController {
 
       if (statusCode == HttpStatus.NOT_FOUND.value()) {
         // deal with api not found
-        if (httpServletRequest.getRequestURI().startsWith("/api")) {
+        if (req.getRequestURI().startsWith("/api")) {
           return ResponseEntity.notFound().build();
         }
 
         // deal with static not found (especially useful for SPA)
+
+        // this is an example of serving next.js static pages
         var pageHtml = "404";
         try {
-          var in = new ClassPathResource("/static/index.html").getInputStream();
+          var in = new ClassPathResource(
+              "/static" + req.getRequestURI() + ".html").getInputStream();
           pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
         } catch (Exception e) {
           log.warn("/static/index.html read failed", e);
         }
-
         var headers = new HttpHeaders();
         headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
         return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
       }
     }
 
-    return ResponseEntity.ok(mvcHookAround.beforeWritingBody(request, response,
-        JsonResult.of(null, RespCodeImpl.SERVER_ERROR)));
+    return ResponseEntity.ok(JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
   }
-
 }

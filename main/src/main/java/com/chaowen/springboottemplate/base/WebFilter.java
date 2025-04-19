@@ -46,8 +46,5 @@ class WebFilter extends OncePerRequestFilter {
     // wrap request to allow body reuse
     filterChain.doFilter(new ContentCachingRequestWrapper(request),
         response); // forward to actual handler
-
-    mvcHookAround.afterMvcRequest(request, response);
-
   }
 }

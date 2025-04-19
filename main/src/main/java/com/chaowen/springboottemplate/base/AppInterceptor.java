@@ -2,10 +2,12 @@ package com.chaowen.springboottemplate.base;
 
 import com.chaowen.springboottemplate.base.common.OrderedHandlerInterceptor;
 import com.chaowen.springboottemplate.mvchooks.MvcHookAround;
+import com.chaowen.springboottemplate.mvchooks.ThreadLocalUtil;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.apache.catalina.connector.ResponseFacade;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -32,7 +34,7 @@ public class AppInterceptor implements OrderedHandlerInterceptor {
       return true;
     }
 
-    log.debug("> Before Mvc Request");
+    log.debug("> Before Mvc Request: {}", request.getRequestURI());
 
     // only intercept HandlerMethod
     if (!(handler instanceof HandlerMethod)) {
@@ -47,6 +49,16 @@ public class AppInterceptor implements OrderedHandlerInterceptor {
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response, @NotNull Object handler,
       Exception ex) {
+
+    var responseFacade = (ResponseFacade) response;
+    int status = responseFacade.getStatus();
+    if(status != 200 &&( responseFacade.isFinished() || responseFacade.isCommitted() ) ) {
+      log.debug("High possibility to forward to /error; status: {}, finish: {}, commited: {}", status, responseFacade.isFinished(),  responseFacade.isCommitted()  ) ;
+      ThreadLocalUtil.set("mvc_after_hook_delayed", true);
+      return;
+    }
+
+    mvcHookAround.afterMvcRequest(request, response);
   }
 
   @Override

@@ -100,21 +100,12 @@ public class AppResponses {
         Class<? extends HttpMessageConverter<?>> selectedConverterType,
         ServerHttpRequest request, ServerHttpResponse response) {
 
-      if (selectedConverterType != MappingJackson2HttpMessageConverter.class) {
-        return body;
-      }
-
       var req = ((ServletServerHttpRequest) request).getServletRequest();
       var resp = ((ServletServerHttpResponse) response).getServletResponse();
+      boolean returnJson = selectedConverterType == MappingJackson2HttpMessageConverter.class;
 
       // process JsonResult directly
-      if (body instanceof JsonResult) {
-        return mvcHookAround.beforeWritingBody(req, resp, (JsonResult) body);
-      }
-
-      return mvcHookAround.beforeWritingBody(req, resp, JsonResult.of(
-          SimpleFactories.ofJson("detail", "please return JsonResult!!!"),
-          RespCodeImpl.SERVER_ERROR));
+      return mvcHookAround.beforeWritingBody(req, resp, returnJson, body);
     }
 
   }

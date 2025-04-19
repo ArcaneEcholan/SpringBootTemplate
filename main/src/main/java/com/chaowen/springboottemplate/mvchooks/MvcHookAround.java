@@ -26,36 +26,41 @@ public class MvcHookAround {
     return true;
   }
 
-  public Map<Object, Object> beforeWritingBody(
+  public Object beforeWritingBody(
       @NotNull HttpServletRequest request,
-      @NotNull HttpServletResponse response, JsonResult jsonResult) {
+      @NotNull HttpServletResponse response, boolean returnJson, Object data) {
 
     log.debug("> Before Writing Response Body");
 
-    var r = SimpleFactories.ofMap();
+    if (returnJson && data instanceof JsonResult) {
+      var r = SimpleFactories.ofMap();
+      var jsonResult = (JsonResult) data;
+      if (jsonResult.getCode() == null) {
+        log.error("code is required in response");
+        return SimpleFactories.ofMap("code",
+            RespCodeImpl.SERVER_ERROR.getCode(), "msg",
+            RespCodeImpl.SERVER_ERROR.getMsg());
+      }
+      r.put("code", jsonResult.getCode());
 
-    if (jsonResult.getCode() == null) {
-      log.error("code is required in response");
-      return SimpleFactories.ofMap("code", RespCodeImpl.SERVER_ERROR.getCode(),
-          "msg", RespCodeImpl.SERVER_ERROR.getMsg());
+      if (jsonResult.getMsg() != null) {
+        r.put("msg", jsonResult.getMsg());
+      }
+
+      if (jsonResult.getData() != null) {
+        r.put("data", jsonResult.getData());
+      }
+
+      return r;
     }
-    r.put("code", jsonResult.getCode());
 
-    if (jsonResult.getMsg() != null) {
-      r.put("msg", jsonResult.getMsg());
-    }
-
-    if (jsonResult.getData() != null) {
-      r.put("data", jsonResult.getData());
-    }
-
-    return r;
+    return data;
   }
 
   public void afterMvcRequest(
       @NotNull HttpServletRequest request,
       @NotNull HttpServletResponse response) {
-    log.debug("> After Request");
+    log.debug("> After Mvc Request");
     ThreadLocalUtil.clear();
   }
 

@@ -30,6 +30,14 @@ public class ThreadLocalUtil {
     return (ReqCtx) getThreadInfo().get(ThreadLocalRequestInfo.CTX.name());
   }
 
+  public static void set(String key, Object value) {
+    getThreadInfo().put(key, value);
+  }
+
+  public static Object get(String key) {
+    return getThreadInfo().get(key);
+  }
+
   public static void clear() {
     inner.set(new HashMap<>());
   }
