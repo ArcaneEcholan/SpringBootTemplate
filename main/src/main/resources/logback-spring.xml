@@ -11,8 +11,11 @@
             converterClass="org.springframework.boot.logging.logback.ExtendedWhitespaceThrowableProxyConverter"/>
 
     <!--    <property name="log.file-location" value="/tmp/logs/ttn-admin-center.log"/>-->
+<!--    <property name="CONSOLE_LOG_PATTERN"-->
+<!--            value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyyMMddHHmmss.SS}}){faint} %clr(%-15.15t){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%C::%M]){yellow} %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>-->
+
     <property name="CONSOLE_LOG_PATTERN"
-            value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-yyyyMMddHHmmss.SS}}){faint} %clr(%-15.15t){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %clr([%C::%M]){yellow} %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
+            value="${CONSOLE_LOG_PATTERN:-%clr(%d{${LOG_DATEFORMAT_PATTERN:-M/d/yyyy h:mm:ss.SSS a}}){faint} %clr(${LOG_LEVEL_PATTERN:-%5p}) %m %n${LOG_EXCEPTION_CONVERSION_WORD:-%wEx}}"/>
 
     <!-- console out -->
     <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
@@ -27,7 +30,7 @@
     </appender>
 
     <root>
-        <level value="DEBUG"/>
+        <level value="INFO"/>
         <appender-ref ref="CONSOLE"/>
     </root>
 </configuration>

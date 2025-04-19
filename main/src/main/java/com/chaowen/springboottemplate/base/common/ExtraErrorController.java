@@ -56,28 +56,61 @@ public class ExtraErrorController implements ErrorController {
       int statusCode = response.getStatus();
 
       if (statusCode == HttpStatus.NOT_FOUND.value()) {
-        // deal with api not found
-        if (req.getRequestURI().startsWith("/api")) {
-          return ResponseEntity.notFound().build();
-        }
 
         // deal with static not found (especially useful for SPA)
-
-        // this is an example of serving next.js static pages
-        var pageHtml = "404";
-        try {
-          var in = new ClassPathResource(
-              "/static" + req.getRequestURI() + ".html").getInputStream();
-          pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-        } catch (Exception e) {
-          log.warn("/static/index.html read failed", e);
-        }
-        var headers = new HttpHeaders();
-        headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-        return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+        return serviceNextJsStaticDist(req,resp);
       }
     }
 
     return ResponseEntity.ok(JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
+  }
+
+  /**
+   * an example of serving next.js static pages
+   */
+  @SneakyThrows
+  ResponseEntity serviceNextJsStaticDist(
+      HttpServletRequest req, HttpServletResponse resp) {
+    boolean found = false;
+
+    var pageHtml = "404";
+    try {
+      var in = new ClassPathResource(
+          "/static" + req.getRequestURI() + ".html").getInputStream();
+      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+      found = true;
+    } catch (Exception e) {
+      log.warn("{} not found", req.getRequestURI() + ".html", e);
+      var in = new ClassPathResource("/presetpages/404.html").getInputStream();
+      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+    }
+
+
+    var headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
+    return new ResponseEntity(pageHtml, headers, found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+  }
+
+  /**
+   * an example of serving vue2 static pages
+   */
+  @SneakyThrows
+  ResponseEntity serviceVuejs2StaticDist(
+      HttpServletRequest req, HttpServletResponse resp) {
+    boolean found = false;
+
+    var pageHtml = "404";
+    try {
+      var in = new ClassPathResource("/static/index.html").getInputStream();
+      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+      found = true;
+    } catch (Exception e) {
+      log.warn("/index.html not found", e);
+      var in = new ClassPathResource("/presetpages/404.html").getInputStream();
+      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
+    }
+    var headers = new HttpHeaders();
+    headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
+    return new ResponseEntity(pageHtml, headers, found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
   }
 }

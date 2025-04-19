@@ -34,7 +34,8 @@ public class AppInterceptor implements OrderedHandlerInterceptor {
       return true;
     }
 
-    log.debug("> Before Mvc Request: {}", request.getRequestURI());
+    log.info("{} {}", request.getMethod(), request.getRequestURI());
+    log.debug("> Before Mvc Request");
 
     // only intercept HandlerMethod
     if (!(handler instanceof HandlerMethod)) {

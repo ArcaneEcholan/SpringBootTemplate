@@ -26,18 +26,23 @@ logging:
   config: classpath:logback-spring.xml
   level:
     _org.springframework.web.servlet.HandlerMapping.Mappings: off
-    net.sf.ehcache: info
-    sun.rmi: info
-    oshi.software.os.linux: error
-    oshi.util.FileUtil: error
-    io.netty: info
-    io.netty.handler.logging.LoggingHandler: debug
+    com.alibaba.druid.pool.PreparedStatementPool: info
     com.ccm.web: debug
     com.zaxxer.hikari: info
-    com.alibaba.druid.pool.PreparedStatementPool: info
+    io.netty: info
+    io.netty.handler.logging.LoggingHandler: debug
+    net.sf.ehcache: info
     org.apache: info
+    org.apache.catalina.core.ContainerBase: warn
+    org.apache.catalina.core.StandardContext: warn
+    org.apache.catalina.core.StandardService: warn
+    org.apache.catalina.core.StandardEngine: warn
+    org.apache.coyote.http11.Http11NioProtocol: warn
     org.hibernate: info
+    org.hibernate.validator.internal.util.Version: warn
+    org.jboss.logging: warn
     org.mybatis.spring.mapper.ClassPathMapperScanner: info
+    org.reflections.Reflections: warn
     org.springframework.orm.jpa.JpaTransactionManager: info
     org.springframework: info
     org.springframework.boot.autoconfigure.web.servlet.WelcomePageHandlerMapping: warn
@@ -45,19 +50,16 @@ logging:
     org.springframework.context.support.PostProcessorRegistrationDelegate: warn
     org.springframework.context.annotation.AutoProxyRegistrar: off
     org.springframework.data.repository.config.RepositoryConfigurationDelegate: warn
-    org.apache.catalina.core.StandardContext: warn
-    org.apache.catalina.core.StandardService: warn
-    org.apache.catalina.core.StandardEngine: warn
-    org.apache.coyote.http11.Http11NioProtocol: warn
-    org.hibernate.validator.internal.util.Version: warn
-    org.jboss.logging: warn
-    org.reflections.Reflections: warn
+    org.springframework.web.servlet.DispatcherServlet: warn
+    oshi.software.os.linux: error
+    oshi.util.FileUtil: error
+    sun.rmi: info
 
 # ============== custom ==============
 db:
-  enabled: false
+  enabled: true
   user: root
   password: root
   name: test
   host: localhost
-  port: 3306
+  port: 33071
