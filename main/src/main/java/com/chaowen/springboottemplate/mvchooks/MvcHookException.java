@@ -54,8 +54,8 @@ public class MvcHookException {
       method = req.getMethod();
       url = req.getRequestURI();
     }
-    log.error("{}: Server Exception-Name:{}: ，Server Exception-Msg: {}",
-        method + "-" + url, ex.getClass().getSimpleName(), ex.getMessage());
+    log.error("{}: Exception Name:{} ,Exception Msg: {}",
+        method + " " + url, ex.getClass().getSimpleName(), ex.getMessage());
 
     if (ex instanceof HttpRequestMethodNotSupportedException) {
       return ResponseEntity.ok(JsonResult.of(null, "METHOD_NOT_ALLOWED", ""));
@@ -182,10 +182,10 @@ public class MvcHookException {
       return createJsonResult(code, msg, data);
     }
 
-    // Common method for creating JsonResult
+    // common method for creating JsonResult
     private ResponseEntity<JsonResult> createJsonResult(
         String code, String msg, Object data) {
-      log.error("response with error: {}", code);
+      log.error("Response with error: {}; {};", code, msg);
       return ResponseEntity.ok(JsonResult.of(data, code, msg));
     }
   }

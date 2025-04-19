@@ -16,14 +16,13 @@ English | [简体中文](./README-zh.md)
 ## App Hooks
 
 -   **Before All Beans Init**: Run custom logic **before** any Spring bean is initialized.
-    useful for high-priority tasks that must happen before even database beans are ready.
+    Useful for high-priority tasks that must happen before even database beans are ready.
 
 -   **After All Beans Inited**: Run custom logic **after** all Spring beans are initialized.
-    helpful for features that depend on database access.
+    Helpful for features that depend on database access.
 
 ## MVC Hooks
 
-Controller Logic Exception:
 `beforeMvcRequest` → `exceptionHappened/Handle Extra Exception` → `beforeWritingBody` → `afterMvcRequest`
 
 - **beforeMvcRequest / afterMvcRequest**
@@ -44,6 +43,10 @@ Controller Logic Exception:
 -   **Dynamic Table Name**: Dynamically build table names based on runtime context.
 
 -   **Conditional Index Creation**: Conditionally create database indexes when needed.
+
+## Host Static Pages
+
+Support serving `vue2js`, `next.js`.
 
 ---
 
