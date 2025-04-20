@@ -15,20 +15,23 @@
 
 ## 应用钩子
 
--   `BeforeBeanInitHook`: Beans 创建之前，执行高优先级逻辑。
--   `AfterBeanInitHook`: Beans 初始化后，执行自定义逻辑。
+在 Sprign IOC Bean 创建前后进行定制操作，例如决定是否初始化数据库连接。
+
+| Hook Name              | Desc                                        |
+| ---------------------- | ------------------------------------------- |
+| **BeforeBeanInitHook** | Spring IOC Beans 创建之前，执行高优先级逻辑 |
+| **AfterBeanInitHook**  | Spring IOC Beans 初始化后，执行自定义逻辑   |
 
 ## MVC 钩子
 
-`beforeMvcRequest` → `exceptionHappened/Handle Extra Exception` → `beforeWritingBody` → `afterMvcRequest`
+`beforeMvcRequest` → `handleEx/handleExtraEx` → `beforeWritingBody` → `afterMvcRequest`
 
--   `beforeMvcRequest/afterMvcRequest`: 在进入 Controller 方法前后，执行自定义逻辑。
-
--   `exceptionHappened`: 集中管理异常处理逻辑。
-
--   `Handle Extra Exception`: 处理一些业务代码之外的异常，比如 Spring 框架找不到路由这种无法定制的异常，或者没有被 exceptionHappened 处理的异常，都会进入这个特殊异常处理逻辑。（最常见是 404 页面的定制）。
-
--   `beforeWritingBody`: 全局性地自定义响应体，在返回给客户端前进行处理。
+| 钩子名称                   | 描述             |
+| -------------------------- | ---------------- |
+| **beforeMvcRequest**       | 请求前           |
+| **handleEx/handleExtraEx** | 处理请求逻辑异常 |
+| **beforeWritingBody**      | **返回请求体**前 |
+| **afterMvcRequest**        | 请求后           |
 
 ## SQL 表结构初始化
 

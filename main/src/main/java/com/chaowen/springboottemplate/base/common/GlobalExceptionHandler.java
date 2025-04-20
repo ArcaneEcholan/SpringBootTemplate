@@ -25,7 +25,7 @@ public class GlobalExceptionHandler {
   @ResponseBody
   public ResponseEntity handleException(
       HttpServletRequest req, HttpServletResponse resp, Exception ex) {
-    return mvcHookException.exceptionHappened(req, resp, ex);
+    return mvcHookException.handleEx(req, resp, ex);
   }
 
 }

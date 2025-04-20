@@ -44,7 +44,7 @@ public class MvcHookException {
   HelperFunctions helperFunctions;
 
   @SneakyThrows
-  public ResponseEntity exceptionHappened(
+  public ResponseEntity handleEx(
       HttpServletRequest req, HttpServletResponse resp, Exception ex) {
     log.debug("> Handle Exception");
 

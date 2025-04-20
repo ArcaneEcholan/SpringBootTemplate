@@ -15,28 +15,23 @@ English | [简体中文](./README-zh.md)
 
 ## App Hooks
 
--   **Before All Beans Init**: Run custom logic **before** any Spring bean is initialized.
-    Useful for high-priority tasks that must happen before even database beans are ready.
+Useful for customization before and after IOC bean creation, eg. decide whether to init db connection.
 
--   **After All Beans Inited**: Run custom logic **after** all Spring beans are initialized.
-    Helpful for features that depend on database access.
+| Hook Name              | Desc                                  |
+| ---------------------- | ------------------------------------- |
+| **BeforeBeanInitHook** | before spring ioc bean initialization |
+| **AfterBeanInitHook**  | after spring ioc bean initialization  |
 
 ## MVC Hooks
 
-`beforeMvcRequest` → `exceptionHappened/Handle Extra Exception` → `beforeWritingBody` → `afterMvcRequest`
+`beforeMvcRequest` → `handleEx/handleExtraEx` → `beforeWritingBody` → `afterMvcRequest`
 
-- **beforeMvcRequest / afterMvcRequest**
-  custom logic executed before and after entering the controller method.
-
-- **exceptionHappened**
-  centralized logic for handling controller exceptions.
-
-- **Handle Extra Exception**
-  handles exceptions outside business logic, such as those from the spring framework (e.g., route not found) that can’t be customized through regular exception handling.
-  this includes exceptions not handled by `exceptionHappened` — most commonly used for custom 404 pages.
-
-- **beforeWritingBody**
-  global customization of the response body, processed right before it’s returned to the client.
+| Hook Name                  | Desc                             |
+| -------------------------- | -------------------------------- |
+| **beforeMvcRequest**       | before mvc request               |
+| **handleEx/handleExtraEx** | handle mvc **exceptions**        |
+| **beforeWritingBody**      | before writing **response body** |
+| **afterMvcRequest**        | after mvc request                |
 
 ## SQL Schema Init
 
@@ -61,21 +56,23 @@ Support serving `vue2js`, `next.js`.
     cd easy-spring-template
     ```
 
--   run `App.java` without configuring a db by default
+-   use **jdk8** to compile
+
+-   run `App.java`
 
 ---
 
-## Run with DB
+## Run with DB (Optional)
 
-* Set `db.enabled: true`.
+-   Set `db.enabled: true`.
 
-* Start Database with docker:
+-   Start Database with docker:
 
     ```sh
     sudo docker compose -f ./docker-compose-db.yml up -d
     ```
 
-* Configure db properties at: `src/main/resources/application.yml`:
+-   Configure db properties at: `src/main/resources/application.yml`:
 
     ```
     # ============== custom ==============

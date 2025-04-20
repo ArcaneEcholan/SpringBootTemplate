@@ -31,9 +31,15 @@ public class ExtraErrorController implements ErrorController {
   @Autowired
   MvcHookAround mvcHookAround;
 
+  /**
+   * handles exceptions outside business logic, such as those from the spring
+   * framework (e.g., route not found) that can’t be customized through regular
+   * exception handling. this includes exceptions not handled by
+   * `exceptionHappened` — most commonly used for custom 404 pages.
+   */
   @RequestMapping("/error")
   @SneakyThrows
-  public ResponseEntity handleExtraError(
+  public ResponseEntity handleExtraEx(
       HttpServletRequest request, HttpServletResponse response) {
     log.debug("> Handle Extra Exception");
 
@@ -58,7 +64,7 @@ public class ExtraErrorController implements ErrorController {
       if (statusCode == HttpStatus.NOT_FOUND.value()) {
 
         // deal with static not found (especially useful for SPA)
-        return serviceNextJsStaticDist(req,resp);
+        return serviceNextJsStaticDist(req, resp);
       }
     }
 
@@ -85,10 +91,10 @@ public class ExtraErrorController implements ErrorController {
       pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
     }
 
-
     var headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-    return new ResponseEntity(pageHtml, headers, found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    return new ResponseEntity(pageHtml, headers,
+        found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
   }
 
   /**
@@ -111,6 +117,7 @@ public class ExtraErrorController implements ErrorController {
     }
     var headers = new HttpHeaders();
     headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-    return new ResponseEntity(pageHtml, headers, found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    return new ResponseEntity(pageHtml, headers,
+        found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
   }
 }
