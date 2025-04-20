@@ -57,9 +57,9 @@ logging:
 
 # ============== custom ==============
 db:
-  enabled: true
+  enabled: false
   user: root
   password: root
   name: test
   host: localhost
-  port: 33071
+  port: 33061

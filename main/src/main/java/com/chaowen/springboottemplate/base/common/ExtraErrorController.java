@@ -12,8 +12,9 @@ import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.web.servlet.error.ErrorController;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,13 @@ public class ExtraErrorController implements ErrorController {
 
   @Autowired
   MvcHookAround mvcHookAround;
+
+  @Autowired
+  StaticLocationProperties staticLocationProperties;
+  @Autowired
+  ResourceLoader resourceLoader;
+  @Autowired
+  WebProperties webProperties;
 
   /**
    * handles exceptions outside business logic, such as those from the spring
@@ -61,63 +69,51 @@ public class ExtraErrorController implements ErrorController {
 
       int statusCode = response.getStatus();
 
+      // deal with static not found (especially useful for SPA)
       if (statusCode == HttpStatus.NOT_FOUND.value()) {
 
-        // deal with static not found (especially useful for SPA)
-        return serviceNextJsStaticDist(req, resp);
+        var headers = new HttpHeaders();
+        headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
+
+        String pageHtml = null;
+
+        // the target search order matters!
+
+        // for nextjs static page strategy(append .html to uri)
+        //pageHtml = readCpResUtf8(req.getRequestURI() + ".html");
+        //if (pageHtml != null) {
+        //  return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+        //}
+        //pageHtml = readCpResUtf8("404.html");
+        //if (pageHtml != null) {
+        //  return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+        //}
+
+        // for vuejs static page strategy(js router vue-router handles routing)
+        pageHtml = readCpResUtf8("index.html");
+        if (pageHtml != null) {
+          return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+        }
+
+        return new ResponseEntity(pageHtml, headers, HttpStatus.NOT_FOUND);
       }
     }
 
     return ResponseEntity.ok(JsonResult.of(null, RespCodeImpl.SERVER_ERROR));
   }
 
-  /**
-   * an example of serving next.js static pages
-   */
   @SneakyThrows
-  ResponseEntity serviceNextJsStaticDist(
-      HttpServletRequest req, HttpServletResponse resp) {
-    boolean found = false;
+  String readCpResUtf8(String relativePath) {
+    var finder = new StaticResourceFinder(
+        StaticResourceFinder.getConfiguredStaticLocations(
+            webProperties.getResources()), resourceLoader);
+    var r = finder.findStaticResource(relativePath);
+    if (r != null) {
+      return StreamUtils.copyToString(r.getInputStream(),
+          StandardCharsets.UTF_8);
 
-    var pageHtml = "404";
-    try {
-      var in = new ClassPathResource(
-          "/static" + req.getRequestURI() + ".html").getInputStream();
-      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-      found = true;
-    } catch (Exception e) {
-      log.warn("{} not found", req.getRequestURI() + ".html", e);
-      var in = new ClassPathResource("/presetpages/404.html").getInputStream();
-      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
     }
-
-    var headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-    return new ResponseEntity(pageHtml, headers,
-        found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
+    return null;
   }
 
-  /**
-   * an example of serving vue2 static pages
-   */
-  @SneakyThrows
-  ResponseEntity serviceVuejs2StaticDist(
-      HttpServletRequest req, HttpServletResponse resp) {
-    boolean found = false;
-
-    var pageHtml = "404";
-    try {
-      var in = new ClassPathResource("/static/index.html").getInputStream();
-      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-      found = true;
-    } catch (Exception e) {
-      log.warn("/index.html not found", e);
-      var in = new ClassPathResource("/presetpages/404.html").getInputStream();
-      pageHtml = StreamUtils.copyToString(in, StandardCharsets.UTF_8);
-    }
-    var headers = new HttpHeaders();
-    headers.add(HttpHeaders.CONTENT_TYPE, "text/html; charset=UTF-8");
-    return new ResponseEntity(pageHtml, headers,
-        found ? HttpStatus.OK : HttpStatus.NOT_FOUND);
-  }
 }
