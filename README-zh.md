@@ -43,6 +43,19 @@
 
 支持 `vue2js`, `next.js`.
 
+命令：
+
+```shell
+java -jar xx.jar --serve_static="/path/to/static/"
+```
+
+-   serve_static 参数指定磁盘上的 static 文件夹路径。
+    | value | |
+    | ------------------ | ---- |
+    | "/path/to/static/" | good |
+    | "/path/to/static" | bad: 没有以 "/" 结尾 |
+    | "path/to/static" | bad: 没有以 "/" 开头 |
+
 ---
 
 ## 快速上手

@@ -2,7 +2,8 @@
 
 English | [简体中文](./README-zh.md)
 
-> A lightweight and easy-to-use Spring Boot startup template, based on **Spring Boot 2.7.0**.
+> A lightweight and easy-to-use Spring Boot startup template, based on **Spring
+> Boot 2.7.0**.
 
 ---
 
@@ -15,7 +16,8 @@ English | [简体中文](./README-zh.md)
 
 ## App Hooks
 
-Useful for customization before and after IOC bean creation, eg. decide whether to init db connection.
+Useful for customization before and after IOC bean creation, eg. decide whether
+to init db connection.
 
 | Hook Name              | Desc                                  |
 | ---------------------- | ------------------------------------- |
@@ -35,13 +37,26 @@ Useful for customization before and after IOC bean creation, eg. decide whether 
 
 ## SQL Schema Init
 
--   **Dynamic Table Name**: Dynamically build table names based on runtime context.
+-   **Dynamic Table Name**: Dynamically build table names based on runtime
+    context.
 
--   **Conditional Index Creation**: Conditionally create database indexes when needed.
+-   **Conditional Index Creation**: Conditionally create database indexes when
+    needed.
 
 ## Host Static Pages
 
 Support serving `vue2js`, `next.js`.
+
+```shell
+java -jar xx.jar --serve_static="/path/to/static/"
+```
+
+-   serve_static: specify a static folder on the filesystem to serve.
+    | value | |
+    | ------------------ | ---- |
+    | "/path/to/static/" | good |
+    | "/path/to/static" | bad: not end with "/" |
+    | "path/to/static" | bad: not start with "/" |
 
 ---
 

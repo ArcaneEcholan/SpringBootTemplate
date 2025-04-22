@@ -10,6 +10,13 @@ spring:
     async:
       # resolution for AsyncRequestTimeoutException when download too slow
       request-timeout: -1
+  web:
+    resources:
+      static-locations:
+        - "classpath:/META-INF/resources/"
+        - "classpath:/resources/"
+        - "classpath:/static/"
+        - "classpath:/public/"
 
 server:
   port: 8080
@@ -63,3 +70,5 @@ db:
   name: test
   host: localhost
   port: 33061
+
+#serve_static: "/your/path/to/static/"

@@ -14,6 +14,7 @@ import lombok.var;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.web.servlet.error.ErrorController;
+import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -31,7 +32,8 @@ public class ExtraErrorController implements ErrorController {
 
   @Autowired
   MvcHookAround mvcHookAround;
-
+  @Autowired
+  Environment env;
   @Autowired
   StaticLocationProperties staticLocationProperties;
   @Autowired
@@ -111,9 +113,8 @@ public class ExtraErrorController implements ErrorController {
     if (r != null) {
       return StreamUtils.copyToString(r.getInputStream(),
           StandardCharsets.UTF_8);
-
     }
+
     return null;
   }
-
 }
