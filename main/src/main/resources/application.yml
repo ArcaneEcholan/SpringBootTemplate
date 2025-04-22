@@ -72,3 +72,4 @@ db:
   port: 33061
 
 #serve_static: "/your/path/to/static/"
+#serve_mode: "nextjs"

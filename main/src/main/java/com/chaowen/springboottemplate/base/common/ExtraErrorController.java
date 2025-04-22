@@ -1,10 +1,12 @@
 package com.chaowen.springboottemplate.base.common;
 
 import com.chaowen.springboottemplate.base.AppResponses.JsonResult;
+import com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper;
 import com.chaowen.springboottemplate.mvchooks.MvcHookAround;
 import com.chaowen.springboottemplate.mvchooks.MvcHookException;
 import com.chaowen.springboottemplate.mvchooks.RespCodeImpl;
 import java.nio.charset.StandardCharsets;
+import java.util.Objects;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
@@ -81,20 +83,23 @@ public class ExtraErrorController implements ErrorController {
 
         // the target search order matters!
 
-        // for nextjs static page strategy(append .html to uri)
-        //pageHtml = readCpResUtf8(req.getRequestURI() + ".html");
-        //if (pageHtml != null) {
-        //  return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
-        //}
-        //pageHtml = readCpResUtf8("404.html");
-        //if (pageHtml != null) {
-        //  return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
-        //}
-
-        // for vuejs static page strategy(js router vue-router handles routing)
-        pageHtml = readCpResUtf8("index.html");
-        if (pageHtml != null) {
-          return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+        String serveMode = SpringEnvWrapper.getStaticServeMode();
+        if (Objects.equals(serveMode, "vuejs")) {
+          // for vuejs static page strategy(js router vue-router handles routing)
+          pageHtml = readResUtf8("index.html");
+          if (pageHtml != null) {
+            return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+          }
+        } else if (Objects.equals(serveMode, "nextjs")) {
+          //for nextjs static page strategy(append .html to uri)
+          pageHtml = readResUtf8(req.getRequestURI() + ".html");
+          if (pageHtml != null) {
+            return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+          }
+          pageHtml = readResUtf8("404.html");
+          if (pageHtml != null) {
+            return new ResponseEntity(pageHtml, headers, HttpStatus.OK);
+          }
         }
 
         return new ResponseEntity(pageHtml, headers, HttpStatus.NOT_FOUND);
@@ -105,7 +110,7 @@ public class ExtraErrorController implements ErrorController {
   }
 
   @SneakyThrows
-  String readCpResUtf8(String relativePath) {
+  String readResUtf8(String relativePath) {
     var finder = new StaticResourceFinder(
         StaticResourceFinder.getConfiguredStaticLocations(
             webProperties.getResources()), resourceLoader);
@@ -117,4 +122,5 @@ public class ExtraErrorController implements ErrorController {
 
     return null;
   }
+
 }

@@ -1,8 +1,10 @@
 package com.chaowen.springboottemplate.base;
 
+import com.chaowen.springboottemplate.base.BeforeBeanInitializer.SpringEnvWrapper;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeansException;
@@ -50,6 +52,16 @@ public class StaticLocationBeanPostProcessor implements BeanPostProcessor {
   public Object postProcessBeforeInitialization(Object bean, String beanName)
       throws BeansException {
     if (bean.getClass() == WebProperties.class) {
+      String serveMode = SpringEnvWrapper.getStaticServeMode();
+      if (Objects.equals(serveMode, "vuejs")) {
+
+      } else if (Objects.equals(serveMode, "nextjs")) {
+
+      } else {
+        throw new RuntimeException(
+            "invalid 'serve_mode', should be one of [\"vuejs\", \"nextjs\"]");
+      }
+
       String serveStatic = environment.getProperty("serve_static");
       if (serveStatic == null) {
         return bean;
@@ -65,7 +77,7 @@ public class StaticLocationBeanPostProcessor implements BeanPostProcessor {
         return bean;
       }
 
-      throw new RuntimeException("'serve_static' invalid");
+      throw new RuntimeException("invalid 'serve_static' ");
     }
 
     return bean;

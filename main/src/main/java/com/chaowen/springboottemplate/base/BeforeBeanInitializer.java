@@ -1,5 +1,7 @@
 package com.chaowen.springboottemplate.base;
 
+import static com.chaowen.springboottemplate.base.common.Utils.withDefault;
+
 import com.chaowen.springboottemplate.apphooks.BeforeBeanInitHooks.TableSuffixInitHook;
 import com.chaowen.springboottemplate.apphooks.TableNameMapper;
 import java.util.ArrayList;
@@ -10,6 +12,7 @@ import java.util.Objects;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import lombok.var;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
@@ -75,6 +78,11 @@ public class BeforeBeanInitializer
 
     public static boolean dbEnable() {
       return Objects.equals(environment.getProperty("db.enable"), "true");
+    }
+
+    @NotNull
+    public static String getStaticServeMode() {
+      return withDefault(environment.getProperty("serve_mode"), "vuejs");
     }
   }
 
