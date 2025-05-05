@@ -45,6 +45,8 @@ to init db connection.
 
 ## Host Static Pages
 
+**Basic Usage**
+
 Support serving `vue2js`, `next.js`.
 
 ```shell
@@ -57,6 +59,62 @@ java -jar xx.jar --serve_static="/path/to/static/"
     | "/path/to/static/" | good |
     | "/path/to/static" | bad: not end with "/" |
     | "path/to/static" | bad: not start with "/" |
+
+**Start using docker compose**
+
+```
+staticserver/
+├── server.jar
+├── docker-compose.yml
+├── .env(optional)
+└── static/
+    └── index.html
+```
+
+docker-compose.yml
+
+```yml
+version: "3.8"
+
+services:
+    staticserver:
+        image: eclipse-temurin:8-alpine
+        container_name: "${CONTAINER_NAME:-staticserver}"
+        restart: always
+        ports:
+            - "${LOCAL_PORT:-8080}:8080"
+        volumes:
+            - "${SERVER_JAR:-./server.jar}:/server.jar"
+            - "${STATIC_LOCATION:-./static}:/static"
+        command: >
+            java -Dfile.encoding=UTF-8 -jar /server.jar
+            --serve_mode="nextjs"
+            --serve_static="/static/"
+```
+
+.env
+```
+CONTAINER=staticserver
+LOCAL_PORT=8080
+STATIC_LOCATION=custom/static
+SERVER_JAR=custom/server.jar
+```
+
+start static server
+
+```shell
+docker compose \
+-f ${staticserver}/docker-compose.yml \
+up -d
+```
+
+stop static server
+
+```shell
+docker compose \
+-f ${staticserver}/docker-compose.yml \
+down
+```
 
 ---
 
